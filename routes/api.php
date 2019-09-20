@@ -13,12 +13,18 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
+Route::middleware(['auth:api','verified'])->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::post('login', 'Api\UserController@login');
-Route::post('register', 'Api\UserController@register');
+Route::group(['namespace' => 'Api'],function () {
+    Route::post('login', 'UserController@login');
+    Route::post('register', 'UserController@register');
+    Route::get("email/verify/{id}", "VerificationController@verify")->name("verification.verify");
+    Route::get("email/resend", "VerificationController@resend")->name("verification.resend");
+    Route::get("email/notice", "VerificationController@notice")->name("verification.notice");
+});
+
 
 Route::group([    
     'namespace' => 'Api',    
@@ -29,6 +35,6 @@ Route::group([
     Route::post('reset', 'PasswordResetController@reset');
 });
 
-Route::middleware('auth:api')->group(function () {
+Route::middleware(['auth:api','verified'])->group(function () {
 
 });
