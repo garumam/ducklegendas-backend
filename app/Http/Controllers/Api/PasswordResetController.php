@@ -89,8 +89,10 @@ class PasswordResetController extends Controller
             ['token', $request->token],
             ['email', $request->email]
         ])->first();
+        
+        $validate = $this.validationToken($passwordReset);
 
-        if ($this.validationToken($passwordReset)){
+        if ($validate){
 
             $user = User::where('email', $passwordReset->email)->first();
             if (!$user)
@@ -104,7 +106,8 @@ class PasswordResetController extends Controller
             return response()->json($user);
 
         }
-            
+        
+        return $validate;
         
     }
 }
