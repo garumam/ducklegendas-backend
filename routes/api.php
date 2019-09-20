@@ -20,6 +20,16 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::post('login', 'Api\UserController@login');
 Route::post('register', 'Api\UserController@register');
 
+Route::group([    
+    'namespace' => 'Api',    
+    'middleware' => 'api',    
+    'prefix' => 'password'
+], function () {    
+    Route::post('create', 'PasswordResetController@create');
+    Route::get('find/{token}', 'PasswordResetController@find');
+    Route::post('reset', 'PasswordResetController@reset');
+});
+
 Route::middleware('auth:api')->group(function () {
 
 });
