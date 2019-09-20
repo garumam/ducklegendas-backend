@@ -45,13 +45,13 @@ class PasswordResetController extends Controller
         ]);
     }
     /**
-     * Find token password reset
+     * Validate token password reset
      *
      * @param  [string] $token
      * @return [string] message
      * @return [json] passwordReset object
      */
-    public function find($token)
+    public function validationToken($token)
     {
         $passwordReset = PasswordReset::where('token', $token)
             ->first();
@@ -89,8 +89,8 @@ class PasswordResetController extends Controller
             ['token', $request->token],
             ['email', $request->email]
         ])->first();
-        
-        if ($this.find($passwordReset)){
+
+        if ($this.validationToken($passwordReset)){
 
             $user = User::where('email', $passwordReset->email)->first();
             if (!$user)
