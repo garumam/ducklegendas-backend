@@ -20,9 +20,9 @@ Route::middleware(['auth:api','verified'])->get('/user', function (Request $requ
 Route::group(['namespace' => 'Api'],function () {
     Route::post('login', 'Auth\UserController@login');
     Route::post('register', 'Auth\UserController@register');
-    Route::get("email/verify/{id}", "Auth\VerificationController@verify")->name("verification.verify");
-    Route::get("email/resend", "Auth\VerificationController@resend")->name("verification.resend");
-    Route::get("email/notice", "Auth\VerificationController@notice")->name("verification.notice");
+    Route::get('email/verify/{id}', 'Auth\VerificationController@verify')->name('verification.verify');
+    Route::get('email/resend', 'Auth\VerificationController@resend')->name('verification.resend');
+    Route::get('email/notice', 'Auth\VerificationController@notice')->name('verification.notice');
 });
 
 
