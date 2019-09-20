@@ -7,20 +7,25 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use App\User;
+use Carbon\Carbon;
 
 class UserController extends Controller
 {
     public function login(Request $request){
+
+        
         if (!Auth::attempt($request->all())) {
             return response()->json(['message' => 'Erro no login ou senha'], 402);
         }
         $user = Auth::user();
         $user->tokens()->forcedelete();
         $accessToken = $user->createToken('Personal Access Token')->accessToken;
+        $expirateDate = Carbon::parse($user->createToken('Personal Access Token')->token->expires_at)->format('Y-m-d H:i:s');
         return response()->json([
             'user' => $user,
             'access_token' => $accessToken,
-            'token_type' => 'Bearer'
+            'token_type' => 'Bearer',
+            'token_expirate' => $expirateDate
         ], 200);
     }
 
@@ -35,6 +40,7 @@ class UserController extends Controller
         $user = User::create($input); 
         $success['access_token'] =  $user->createToken('Personal Access Token')->accessToken; 
         $success['name'] =  $user->name;
+        $success['token_expirate'] = Carbon::parse($user->createToken('Personal Access Token')->token->expires_at)->format('Y-m-d H:i:s');
         $success['token_type'] =  'Bearer';
         return response()->json(['success'=>$success], 200); 
     }
