@@ -12,7 +12,7 @@ use Illuminate\Foundation\Auth\VerifiesEmails;
 
 class UserController extends Controller
 {
-    use VerifiesEmails;
+    //use VerifiesEmails;
 
     public $successStatus = 200;
     public $errorStatus = 401;
@@ -25,7 +25,7 @@ class UserController extends Controller
         }
         $user = Auth::user();
 
-        if($user->email_verified_at !== NULL){
+        //if($user->email_verified_at !== NULL){
 
             $user->tokens()->forcedelete();
             $tokenCreated = $user->createToken('Personal Access Token');
@@ -37,9 +37,9 @@ class UserController extends Controller
                 'token_expirate' => $expirateDate
             ], $this->successStatus);
 
-        }
+        //}
 
-        return response()->json(['message' => 'Por favor verifique seu e-mail!'], $this->errorStatus);
+        //return response()->json(['message' => 'Por favor verifique seu e-mail!'], $this->errorStatus);
     }
 
     public function register(Request $request) 
@@ -51,13 +51,13 @@ class UserController extends Controller
         $input = $request->all(); 
         $input['password'] = bcrypt($input['password']);
         $user = User::create($input); 
-        $user->sendApiEmailVerificationNotification();
+        //$user->sendApiEmailVerificationNotification();
         $tokenCreated = $user->createToken('Personal Access Token');
         $success['access_token'] =  $tokenCreated->accessToken; 
         $success['name'] =  $user->name;
         $success['token_expirate'] = Carbon::parse($tokenCreated->token->expires_at)->format('Y-m-d H:i:s');
         $success['token_type'] =  'Bearer';
-        $success["message"] = "Please confirm yourself by clicking on verify user button sent to you on your email";
+        //$success["message"] = "Please confirm yourself by clicking on verify user button sent to you on your email";
         return response()->json(['success'=>$success], $this->successStatus); 
     }
 

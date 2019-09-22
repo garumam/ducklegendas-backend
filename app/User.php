@@ -7,8 +7,8 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
 use App\Notifications\VerifyEmail;
-
-class User extends Authenticatable implements MustVerifyEmail
+// implements MustVerifyEmail    se for usar verificação de e-mail
+class User extends Authenticatable
 {
     use HasApiTokens, Notifiable;
 

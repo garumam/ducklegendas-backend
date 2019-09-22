@@ -12,8 +12,8 @@ use Illuminate\Http\Request;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-
-Route::middleware(['auth:api','verified'])->get('/user', function (Request $request) {
+// SE FOR USAR VERIFICAÇÃO COLOCAR O MIDDLEWARE 'verified' NAS ROTAS QUE QUISER
+Route::middleware(['auth:api'])->get('/user', function (Request $request) {
     return $request->user();
 });
 
@@ -35,6 +35,6 @@ Route::group([
     Route::post('reset', 'Auth\PasswordResetController@reset');
 });
 
-Route::middleware(['auth:api','verified'])->group(function () {
+Route::middleware(['auth:api'])->group(function () {
 
 });
