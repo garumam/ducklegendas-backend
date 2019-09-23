@@ -33,13 +33,21 @@ class UserController extends Controller
             return response()->json([
                 'user' => $user,
                 'access_token' => $tokenCreated->accessToken,
-                'token_type' => 'Bearer',
                 'token_expirate' => $expirateDate
             ], $this->successStatus);
 
         //}
 
         //return response()->json(['message' => 'Por favor verifique seu e-mail!'], $this->errorStatus);
+    }
+
+    public function logout(){
+        if (Auth::check()) {
+            Auth::user()->token()->forcedelete();
+            return response()->json(['success' =>'Logout efetuado com sucesso!'],$this->successStatus); 
+        }else{
+            return response()->json(['error' =>'Ocorreu um problema ao deslogar, atualize a página!'], $this->errorStatus);
+        }
     }
 
     public function register(Request $request) 
@@ -56,7 +64,6 @@ class UserController extends Controller
         $success['access_token'] =  $tokenCreated->accessToken; 
         $success['name'] =  $user->name;
         $success['token_expirate'] = Carbon::parse($tokenCreated->token->expires_at)->format('Y-m-d H:i:s');
-        $success['token_type'] =  'Bearer';
         //$success["message"] = "Please confirm yourself by clicking on verify user button sent to you on your email";
         return response()->json(['success'=>$success], $this->successStatus); 
     }

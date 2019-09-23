@@ -23,6 +23,10 @@ Route::group(['namespace' => 'Api'],function () {
     Route::get('email/verify/{id}', 'Auth\VerificationController@verify')->name('verification.verify');
     Route::get('email/resend', 'Auth\VerificationController@resend')->name('verification.resend');
     Route::get('email/notice', 'Auth\VerificationController@notice')->name('verification.notice');
+
+    Route::middleware(['auth:api'])->group(function () {
+        Route::post('logout', 'Auth\UserController@logout');
+    });
 });
 
 
@@ -35,6 +39,3 @@ Route::group([
     Route::post('reset', 'Auth\PasswordResetController@reset');
 });
 
-Route::middleware(['auth:api'])->group(function () {
-
-});
