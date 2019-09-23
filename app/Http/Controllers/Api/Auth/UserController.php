@@ -43,6 +43,7 @@ class UserController extends Controller
 
     public function logout(){
         if (Auth::check()) {
+            Auth::user()->token()->revoke();
             Auth::user()->token()->forcedelete();
             return response()->json(['success' =>'Logout efetuado com sucesso!'],$this->successStatus); 
         }else{
