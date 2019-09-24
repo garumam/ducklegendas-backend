@@ -22,7 +22,7 @@ Route::get('erro', function (){
     
     DB::table('oauth_access_tokens')->whereDate('expires_at','<',Carbon::now()->toDateTimeString())->delete();
 
-    return response()->json(['error' => 'unauthenticated'], 401);
+    return response()->json(['error' => 'unauthenticated'], 200);
 })->name('login');
 
 Route::group(['namespace' => 'Api'],function () {
