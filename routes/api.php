@@ -16,6 +16,9 @@ use Illuminate\Http\Request;
 Route::middleware('auth:api','verifytoken')->get('/user', function (Request $request) {
     return $request->user();
 });
+Route::get('erro', function (){
+    return response()->json(['error' => 'unauthenticated'], 401);
+})->name('login');
 
 Route::group(['namespace' => 'Api'],function () {
     Route::post('login', 'Auth\UserController@login');
