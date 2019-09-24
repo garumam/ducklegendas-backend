@@ -16,7 +16,7 @@ class UserController extends Controller
     //use VerifiesEmails;
 
     public $successStatus = 200;
-    public $errorStatus = 401;
+    public $errorStatus = 403;
 
     public function login(Request $request){
 
@@ -54,10 +54,12 @@ class UserController extends Controller
 
     public function register(Request $request) 
     {
+          
         $validator = $this->validateUser($request);
         if ($validator->fails()) { 
             return response()->json(['error'=>$validator->errors()], $this->errorStatus);            
         }
+        
         $input = $request->all(); 
         $input['password'] = bcrypt($input['password']);
         $user = User::create($input); 
