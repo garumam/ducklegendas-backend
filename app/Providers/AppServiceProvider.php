@@ -14,7 +14,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        date_default_timezone_set('America/Sao_Paulo');
     }
 
     /**
