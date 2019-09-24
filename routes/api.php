@@ -1,6 +1,8 @@
 <?php
 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,10 +15,13 @@ use Illuminate\Http\Request;
 |
 */
 // SE FOR USAR VERIFICAÇÃO COLOCAR O MIDDLEWARE 'verified' NAS ROTAS QUE QUISER
-Route::middleware('auth:api','verifytoken')->get('/user', function (Request $request) {
+Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 Route::get('erro', function (){
+    
+    DB::table('oauth_access_tokens')->whereDate('expires_at','<',Carbon::now()->toDateTimeString())->delete();
+
     return response()->json(['error' => 'unauthenticated'], 401);
 })->name('login');
 
