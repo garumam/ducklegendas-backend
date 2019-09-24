@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\DB;
 |
 */
 // SE FOR USAR VERIFICAÇÃO COLOCAR O MIDDLEWARE 'verified' NAS ROTAS QUE QUISER
-Route::middleware('auth:api')->get('/user', function (Request $request) {
+Route::middleware('auth2:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 Route::get('erro', function (){
@@ -32,7 +32,7 @@ Route::group(['namespace' => 'Api'],function () {
     Route::get('email/resend', 'Auth\VerificationController@resend')->name('verification.resend');
     Route::get('email/notice', 'Auth\VerificationController@notice')->name('verification.notice');
 
-    Route::middleware('auth:api')->group(function () {
+    Route::middleware('auth2:api')->group(function () {
         Route::post('logout', 'Auth\UserController@logout');
     });
 });
