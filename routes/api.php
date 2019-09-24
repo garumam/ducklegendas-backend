@@ -18,12 +18,12 @@ use Illuminate\Support\Facades\DB;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
-Route::get('erro', function (){
+Route::get('error', function (){
     
     DB::table('oauth_access_tokens')->whereDate('expires_at','<',Carbon::now()->toDateTimeString())->delete();
 
     return response()->json(['error' => 'unauthenticated'], 200);
-})->name('login');
+})->name('error');
 
 Route::group(['namespace' => 'Api'],function () {
     Route::post('login', 'Auth\UserController@login');
