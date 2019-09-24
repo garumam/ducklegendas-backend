@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use App\User;
 use Carbon\Carbon;
+use Image;
 use Illuminate\Foundation\Auth\VerifiesEmails;
 
 class UserController extends Controller
@@ -52,7 +53,7 @@ class UserController extends Controller
     }
 
     public function register(Request $request) 
-    { 
+    {
         $validator = $this->validateUser($request);
         if ($validator->fails()) { 
             return response()->json(['error'=>$validator->errors()], $this->errorStatus);            
@@ -60,6 +61,9 @@ class UserController extends Controller
         $input = $request->all(); 
         $input['password'] = bcrypt($input['password']);
         $user = User::create($input); 
+
+        $this->update_avatar($user, $request);
+
         //$user->sendApiEmailVerificationNotification();
         $tokenCreated = $user->createToken('Personal Access Token');
         $success['access_token'] =  $tokenCreated->accessToken; 
@@ -69,11 +73,31 @@ class UserController extends Controller
         return response()->json(['success'=>$success], $this->successStatus); 
     }
 
+    public function update_avatar($user ,Request $request) {
+        
+        $imageUri = '';
+
+        if($request->hasFile('img')) {
+           $avatar   = $request->file('img');
+           $filename = $user->id . '.' . $avatar->getClientOriginalExtension();
+           $imageUri = 'img/users/';
+           $request->img->move($imageUri, $filename);
+           $user->image = $imageUri . $filename;
+           $user->save();
+        }else{
+           $imageUri = 'img/users/man.png';
+           $user->image = $imageUri;
+           $user->save();
+        }
+        return $imageUri;
+    }
+
     private function validateUser($request){
         return Validator::make($request->all(), [ 
             'name' => 'required', 
             'email' => 'required|email|unique:users', 
-            'password' => 'required'
+            'password' => 'required',
+            'img' => 'mimes:jpeg,jpg,png|max:1000'
         ]);
     }
 
