@@ -13,7 +13,7 @@ use Illuminate\Http\Request;
 |
 */
 // SE FOR USAR VERIFICAÇÃO COLOCAR O MIDDLEWARE 'verified' NAS ROTAS QUE QUISER
-Route::middleware(['auth:api'])->get('/user', function (Request $request) {
+Route::middleware('auth:api','verifytoken')->get('/user', function (Request $request) {
     return $request->user();
 });
 
@@ -24,7 +24,7 @@ Route::group(['namespace' => 'Api'],function () {
     Route::get('email/resend', 'Auth\VerificationController@resend')->name('verification.resend');
     Route::get('email/notice', 'Auth\VerificationController@notice')->name('verification.notice');
 
-    Route::middleware(['auth:api'])->group(function () {
+    Route::middleware('auth:api')->group(function () {
         Route::post('logout', 'Auth\UserController@logout');
     });
 });
