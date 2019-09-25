@@ -83,10 +83,6 @@ class UserController extends Controller
            $request->img->move($imageUri, $filename);
            $user->image = $imageUri . $filename;
            $user->save();
-        }else{
-           $imageUri = 'img/users/man.png';
-           $user->image = $imageUri;
-           $user->save();
         }
         return $imageUri;
     }
@@ -96,7 +92,7 @@ class UserController extends Controller
             'name' => 'required', 
             'email' => 'required|email|unique:users', 
             'password' => 'required',
-            'img' => 'mimes:jpeg,jpg,png|max:1000'
+            'img' => 'nullable|mimes:jpeg,jpg,png|max:1000'
         ]);
     }
 
