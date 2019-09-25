@@ -22,7 +22,7 @@ class UserController extends Controller
 
         
         if (!Auth::attempt($request->all())) {
-            return response()->json(['message' => 'Erro no login ou senha'], $this->errorStatus);
+            return response()->json(['error' => 'Erro no login ou senha'], $this->errorStatus);
         }
         $user = Auth::user();
 
@@ -39,7 +39,7 @@ class UserController extends Controller
 
         //}
 
-        //return response()->json(['message' => 'Por favor verifique seu e-mail!'], $this->errorStatus);
+        //return response()->json(['error' => 'Por favor verifique seu e-mail!'], $this->errorStatus);
     }
 
     public function logout(){

@@ -46,7 +46,7 @@ class PasswordResetRequest extends Notification implements ShouldQueue
         // url entra a rota do frontend do formulário de resetar senha
         // passando como parametro na url o token www.front.com/reset?token=$this->token
         //$url = url('/api/password/find/'.$this->token);
-        $url = $this->urlFront.$this->token;
+        $url = $this->urlFront.'/'.$this->token;
         return (new MailMessage)
             ->line('You are receiving this email because we received a password reset request for your account.')
             ->action('Reset Password', url($url))

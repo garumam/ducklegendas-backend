@@ -56,20 +56,9 @@ class PasswordResetController extends Controller
      * @return [string] message
      * @return [json] passwordReset object
      */
-    public function validationToken($token)
+    public function validationToken($passwordReset)
     {
-        $passwordReset = PasswordReset::where('token', $token)
-            ->first();
-        if (!$passwordReset)
-            return response()->json([
-                'error' => 'This password reset token is invalid.'
-            ], $this->errorStatus);
-        if (Carbon::parse($passwordReset->updated_at)->addMinutes(720)->isPast()) {
-            $passwordReset->delete();
-            return response()->json([
-                'error' => 'This password reset token is invalid.'
-            ], $this->errorStatus);
-        }
+        
         return true;
     }
      /**
@@ -90,14 +79,27 @@ class PasswordResetController extends Controller
             'password' => 'required|string|confirmed',
             'token' => 'required|string'
         ]);
+        
         $passwordReset = PasswordReset::where([
             ['token', $request->token],
             ['email', $request->email]
         ])->first();
         
-        $validate = $this.validationToken($passwordReset);
+        //$validate = $this.validationToken($passwordReset);
+        //return response()->json(['success' => $request->all()], $this->successStatus);
+        //if ($validate){
 
-        if ($validate){
+        if (!$passwordReset)
+            return response()->json([
+                'error' => 'This password reset token is invalid.'
+            ], $this->errorStatus);
+        if (Carbon::parse($passwordReset->updated_at)->addMinutes(720)->isPast()) {
+            $passwordReset->delete();
+            return response()->json([
+                'error' => 'This password reset token is invalid.'
+            ], $this->errorStatus);
+        }    
+
 
             $user = User::where('email', $passwordReset->email)->first();
             if (!$user)
@@ -108,11 +110,11 @@ class PasswordResetController extends Controller
             $user->save();
             $passwordReset->delete();
             $user->notify(new PasswordResetSuccess($passwordReset));
-            return response()->json(['success' => $user], $this->successStatus);
+            return response()->json(['success' => 'Senha alterada com sucesso!'], $this->successStatus);
 
-        }
+        //}
         
-        return $validate;
+        //return $validate;
         
     }
 }
