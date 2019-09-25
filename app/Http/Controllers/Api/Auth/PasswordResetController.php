@@ -49,18 +49,7 @@ class PasswordResetController extends Controller
             'success' => 'We have e-mailed your password reset link!'
         ], $this->successStatus);
     }
-    /**
-     * Validate token password reset
-     *
-     * @param  [string] $token
-     * @return [string] message
-     * @return [json] passwordReset object
-     */
-    public function validationToken($passwordReset)
-    {
-        
-        return true;
-    }
+    
      /**
      * Reset password
      *
@@ -85,21 +74,9 @@ class PasswordResetController extends Controller
             ['email', $request->email]
         ])->first();
         
-        //$validate = $this.validationToken($passwordReset);
-        //return response()->json(['success' => $request->all()], $this->successStatus);
-        //if ($validate){
-
-        if (!$passwordReset)
-            return response()->json([
-                'error' => 'This password reset token is invalid.'
-            ], $this->errorStatus);
-        if (Carbon::parse($passwordReset->updated_at)->addMinutes(720)->isPast()) {
-            $passwordReset->delete();
-            return response()->json([
-                'error' => 'This password reset token is invalid.'
-            ], $this->errorStatus);
-        }    
-
+        $error = $this->validationToken($passwordReset);
+        
+        if (empty($error)){
 
             $user = User::where('email', $passwordReset->email)->first();
             if (!$user)
@@ -112,9 +89,20 @@ class PasswordResetController extends Controller
             $user->notify(new PasswordResetSuccess($passwordReset));
             return response()->json(['success' => 'Senha alterada com sucesso!'], $this->successStatus);
 
-        //}
+        }
         
-        //return $validate;
+        return response()->json(['error' => $error], $this->errorStatus);
         
+    }
+
+    public function validationToken($passwordReset)
+    {
+        if (!$passwordReset)
+            return 'This password reset token is invalid.';
+        if (Carbon::parse($passwordReset->updated_at)->addMinutes(720)->isPast()) {
+            $passwordReset->delete();
+            return 'This password reset token is invalid.';
+        } 
+        return '';
     }
 }
