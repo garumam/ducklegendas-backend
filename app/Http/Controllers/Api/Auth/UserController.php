@@ -67,12 +67,9 @@ class UserController extends Controller
         $this->update_avatar($user, $request);
 
         //$user->sendApiEmailVerificationNotification();
-        $tokenCreated = $user->createToken('Personal Access Token');
-        $success['access_token'] =  $tokenCreated->accessToken; 
-        $success['name'] =  $user->name;
-        $success['token_expirate'] = Carbon::parse($tokenCreated->token->expires_at)->format('Y-m-d H:i:s');
+      
         //$success["message"] = "Please confirm yourself by clicking on verify user button sent to you on your email";
-        return response()->json(['success'=>$success], $this->successStatus); 
+        return response()->json(['success'=>'Cadastro efetuado com sucesso'], $this->successStatus); 
     }
 
     public function update_avatar($user ,Request $request) {
