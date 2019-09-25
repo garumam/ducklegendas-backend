@@ -15,42 +15,43 @@ use Illuminate\Support\Facades\DB;
 |
 */
 // SE FOR USAR VERIFICAÇÃO COLOCAR O MIDDLEWARE 'verified' NAS ROTAS QUE QUISER
+
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
-Route::get('error', function (){
+
+// GRUPO DE ROTAS PARA CONTROLADORES DENTRO DA PASTA Api/Auth/
+Route::group(['namespace' => 'Api\Auth'],function () {
     
-    DB::table('oauth_access_tokens')->whereDate('expires_at','<',Carbon::now()->toDateTimeString())->delete();
-
-    return response()->json(['error' => 'unauthenticated'], 200);
-})->name('error');
-
-Route::group(['namespace' => 'Api'],function () {
-    
-    Route::group(['namespace' => 'Auth'], function () {    
-        Route::post('login', 'UserController@login');
-        Route::get('email/verify/{id}', 'VerificationController@verify')->name('verification.verify');
-        Route::get('email/resend', 'VerificationController@resend')->name('verification.resend');
-        Route::get('email/notice', 'VerificationController@notice')->name('verification.notice');
-    });
-
+    //ROTAS DE AUTENTICAÇÃO
+    Route::post('login', 'UserController@login');
     Route::middleware('auth:api')->group(function () {
-        Route::post('logout', 'Auth\UserController@logout');
-
-        Route::group(['namespace' => 'Auth'], function () {    
-            Route::post('register', 'UserController@register');
-        });
-        
+        Route::post('logout', 'UserController@logout');
+        Route::post('register', 'UserController@register');
     });
+
+    //ROTAS DE VERIFICAÇÃO DE E-MAIL
+    Route::group(['prefix' => 'email'], function () {  
+        Route::get('verify/{id}', 'VerificationController@verify')->name('verification.verify');
+        Route::get('resend', 'VerificationController@resend')->name('verification.resend');
+        Route::get('notice', 'VerificationController@notice')->name('verification.notice');
+    });
+
+    //ROTAS DE TROCA DE SENHA
+    Route::group(['prefix' => 'password'], function () {    
+        Route::post('create', 'PasswordResetController@create');
+        Route::post('reset', 'PasswordResetController@reset');
+    });
+
 });
 
-
-Route::group([    
-    'namespace' => 'Api',    
-    'middleware' => 'api',    
-    'prefix' => 'password'
-], function () {    
-    Route::post('create', 'Auth\PasswordResetController@create');
-    Route::post('reset', 'Auth\PasswordResetController@reset');
+// GRUPO DE ROTAS PARA CONTROLADORES DENTRO DA PASTA Api/
+Route::middleware('auth:api')->group(['namespace' => 'Api'], function () {
+    
 });
 
+// ROTA PARA DELETAR TOKENS DE AUTENTICAÇÃO
+Route::get('error', function (){
+    DB::table('oauth_access_tokens')->whereDate('expires_at','<',Carbon::now()->toDateTimeString())->delete();
+    return response()->json(['error' => 'unauthenticated'], 401);
+})->name('error');
