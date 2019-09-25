@@ -45,10 +45,10 @@ Route::group(['namespace' => 'Api\Auth'],function () {
 
 });
 
-// GRUPO DE ROTAS PARA CONTROLADORES DENTRO DA PASTA Api/
-Route::middleware('auth:api')->group(['namespace' => 'Api'], function () {
+// // GRUPO DE ROTAS PARA CONTROLADORES DENTRO DA PASTA Api/
+// Route::middleware('auth:api')->group(['namespace' => 'Api'], function () {
     
-});
+// });
 
 // ROTA PARA DELETAR TOKENS DE AUTENTICAÇÃO
 Route::get('error', function (){
