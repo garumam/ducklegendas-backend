@@ -53,5 +53,5 @@ Route::group(['namespace' => 'Api\Auth'],function () {
 // ROTA PARA DELETAR TOKENS DE AUTENTICAÇÃO
 Route::get('error', function (){
     DB::table('oauth_access_tokens')->whereDate('expires_at','<',Carbon::now()->toDateTimeString())->delete();
-    return response()->json(['error' => 'unauthenticated'], 401);
+    return response()->json(['error' => ['Não autenticado!']], 401);
 })->name('error');
