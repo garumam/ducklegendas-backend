@@ -22,7 +22,7 @@ class UserController extends Controller
 
         
         if (!Auth::attempt($request->all())) {
-            return response()->json(['error' => 'Erro no login ou senha'], $this->errorStatus);
+            return response()->json(['error' => ['Erro no login ou senha']], $this->errorStatus);
         }
         $user = Auth::user();
 
@@ -46,9 +46,9 @@ class UserController extends Controller
         if (Auth::check()) {
             Auth::user()->token()->revoke();
             Auth::user()->token()->forcedelete();
-            return response()->json(['success' =>'Logout efetuado com sucesso!'],$this->successStatus); 
+            return response()->json(['success' =>['Logout efetuado com sucesso!']],$this->successStatus); 
         }else{
-            return response()->json(['error' =>'Ocorreu um problema ao deslogar, atualize a página!'], $this->errorStatus);
+            return response()->json(['error' =>['Ocorreu um problema ao deslogar, atualize a página!']], $this->errorStatus);
         }
     }
 
@@ -69,7 +69,7 @@ class UserController extends Controller
         //$user->sendApiEmailVerificationNotification();
       
         //$success["message"] = "Please confirm yourself by clicking on verify user button sent to you on your email";
-        return response()->json(['success'=>'Cadastro efetuado com sucesso'], $this->successStatus); 
+        return response()->json(['success'=>['Cadastro efetuado com sucesso']], $this->successStatus); 
     }
 
     public function update_avatar($user ,Request $request) {
