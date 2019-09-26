@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Validator;
 use App\Notifications\PasswordResetRequest;
 use App\Notifications\PasswordResetSuccess;
 use App\User;
@@ -25,10 +26,11 @@ class PasswordResetController extends Controller
      */
     public function create(Request $request)
     {
-        $request->validate([
-            'email' => 'required|string|email',
-            'urlFront' => 'required|string'
-        ]);
+       
+        $validator = $this->validateCreate($request);
+        if($validator->fails()){
+            return response()->json(['error'=>$validator->errors()], $this->errorStatus); 
+        }
         $user = User::where('email', $request->email)->first();
         if (!$user)
             return response()->json([
@@ -63,11 +65,10 @@ class PasswordResetController extends Controller
     public function reset(Request $request)
     {
         
-        $request->validate([
-            'email' => 'required|string|email',
-            'password' => 'required|string|confirmed',
-            'token' => 'required|string'
-        ]);
+        $validator = $this->validateReset($request);
+        if($validator->fails()){
+            return response()->json(['error'=>$validator->errors()], $this->errorStatus); 
+        }
         
         $passwordReset = PasswordReset::where([
             ['token', $request->token],
@@ -104,5 +105,20 @@ class PasswordResetController extends Controller
             return 'This password reset token is invalid.';
         } 
         return '';
+    }
+
+    private function validateCreate($request){
+        return Validator::make($request->all(), [ 
+            'email' => 'required|string|email',
+            'urlFront' => 'required|string'
+        ]);
+    }
+
+    private function validateReset($request){
+        return Validator::make($request->all(), [ 
+            'email' => 'required|string|email',
+            'password' => 'required|string|confirmed',
+            'token' => 'required|string'
+        ]);
     }
 }
