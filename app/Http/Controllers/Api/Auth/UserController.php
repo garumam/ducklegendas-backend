@@ -20,9 +20,12 @@ class UserController extends Controller
 
     public function login(Request $request){
 
-        
+        $validator = $this->validateLogin($request);
+        if($validator->fails()){
+            return response()->json(['error'=>$validator->errors()], $this->errorStatus);        
+        }
         if (!Auth::attempt($request->all())) {
-            return response()->json(['error' => ['Erro no login ou senha']], $this->errorStatus);
+            return response()->json(['error' => ['Erro ao logar, dados incorretos']], $this->errorStatus);
         }
         $user = Auth::user();
 
@@ -93,6 +96,12 @@ class UserController extends Controller
             'email' => 'required|email|unique:users', 
             'password' => 'required',
             'img' => 'nullable|mimes:jpeg,jpg,png|max:1000'
+        ]);
+    }
+    private function validateLogin($request){
+        return Validator::make($request->all(), [ 
+            'email' => 'required|email|unique:users', 
+            'password' => 'required|min:6',
         ]);
     }
 
