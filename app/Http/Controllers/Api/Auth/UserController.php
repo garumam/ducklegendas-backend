@@ -100,7 +100,7 @@ class UserController extends Controller
     }
     private function validateLogin($request){
         return Validator::make($request->all(), [ 
-            'email' => 'required|email|unique:users', 
+            'email' => 'required|email', 
             'password' => 'required|min:6',
         ]);
     }
