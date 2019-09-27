@@ -75,6 +75,11 @@ class UserController extends Controller
         return response()->json(['success'=>['Cadastro efetuado com sucesso']], $this->successStatus); 
     }
 
+    public function getAll(){
+        $users = User::all();
+        return $users;
+    }
+
     public function update_avatar($user ,Request $request) {
         
         $imageUri = '';

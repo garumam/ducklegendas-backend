@@ -28,6 +28,7 @@ Route::group(['namespace' => 'Api\Auth'],function () {
     Route::middleware('auth:api')->group(function () {
         Route::post('logout', 'UserController@logout');
         Route::post('register', 'UserController@register');
+        Route::post('users', 'UserController@getAll');
     });
 
     //ROTAS DE VERIFICAÇÃO DE E-MAIL
