@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use App\User;
 use Carbon\Carbon;
-use Image;
 use Illuminate\Foundation\Auth\VerifiesEmails;
 
 class UserController extends Controller
@@ -100,7 +99,7 @@ class UserController extends Controller
             'name' => 'required', 
             'email' => 'required|email|unique:users', 
             'password' => 'required',
-            'img' => 'nullable|mimes:jpeg,jpg,png|max:1000'
+            'img' => 'nullable|image|mimes:jpeg,png,jpg|max:1000|dimensions:max_width=650,max_height=650'
         ]);
     }
     private function validateLogin($request){
