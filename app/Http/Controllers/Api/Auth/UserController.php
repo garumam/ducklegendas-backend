@@ -74,9 +74,12 @@ class UserController extends Controller
         return response()->json(['success'=>['Cadastro efetuado com sucesso']], $this->successStatus); 
     }
 
-    public function getAll(){
+    public function getAll(Request $request){
+        $offset = $request->pagelevel * 100;
         $users = User::all();
-        return response()->json($users);
+        $totalItens = $users->count();
+        $usersSlice = $users->splice($offset, 100);
+        return response()->json(['users'=>$usersSlice->toArray(), 'totalUsers' => $totalItens], $this->successStatus);
     }
 
     public function update_avatar($user ,Request $request) {
