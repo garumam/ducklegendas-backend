@@ -76,10 +76,13 @@ class UserController extends Controller
 
     public function getAll(Request $request){
         // $offset = $request->pagelevel * 100;
-        $users = User::paginate(100);
+        $query = User::where('id','like', '%'.$request->search.'%')
+                    ->orWhere('name','like', '%'.$request->search.'%')
+                    ->orWhere('email','like', '%'.$request->search.'%');
+        $users = $query->paginate(100);
         // $totalItens = $users->count();
         // $usersSlice = $users->splice($offset, 100);
-        return response()->json($users, $this->successStatus);
+        return response()->json(['success'=>$users], $this->successStatus);
     }
 
     public function update_avatar($user ,Request $request) {
