@@ -28,6 +28,8 @@ Route::group(['namespace' => 'Api\Auth'],function () {
     Route::middleware('auth:api')->group(function () {
         Route::post('logout', 'UserController@logout');
         Route::post('register', 'UserController@register');
+        Route::get('user/{id}', 'UserController@findUser');
+        Route::patch('register/update/{id}', 'UserController@registerUpdate');
         Route::post('users', 'UserController@getAll');
     });
 

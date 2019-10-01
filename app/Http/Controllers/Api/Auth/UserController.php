@@ -46,7 +46,6 @@ class UserController extends Controller
 
     public function logout(){
         if (Auth::check()) {
-            Auth::user()->token()->revoke();
             Auth::user()->token()->forcedelete();
             return response()->json(['success' =>['Logout efetuado com sucesso!']],$this->successStatus); 
         }else{
@@ -56,22 +55,54 @@ class UserController extends Controller
 
     public function register(Request $request) 
     {
-          
+         
         $validator = $this->validateUser($request);
         if ($validator->fails()) { 
             return response()->json(['error'=>$validator->errors()], $this->errorStatus);            
         }
-        
-        $input = $request->all(); 
+         
+        $input = $request->except('image');
         $input['password'] = bcrypt($input['password']);
         $user = User::create($input); 
-
+        
         $this->update_avatar($user, $request);
 
         //$user->sendApiEmailVerificationNotification();
       
         //$success["message"] = "Please confirm yourself by clicking on verify user button sent to you on your email";
         return response()->json(['success'=>['Cadastro efetuado com sucesso']], $this->successStatus); 
+    }
+
+    public function registerUpdate(Request $request) 
+    {
+        $validator = $this->validateUser($request);
+        if ($validator->fails()) { 
+            return response()->json(['error'=>$validator->errors()], $this->errorStatus);            
+        }
+        
+        $input = $request->except('image'); 
+        $input['password'] = bcrypt($input['password']);
+        $user = User::find($request->id);
+
+        if($user){
+            $this->update_avatar($user, $request);
+            $user->update($input);
+
+            return response()->json(['success'=>['Cadastro atualizado com sucesso']], $this->successStatus);
+        }else{
+            return response()->json(['error'=>['Usuário não encontrado']], $this->errorStatus);
+        }  
+         
+    }
+
+    public function findUser($id){
+        $user = User::find($id);
+
+        if($user){
+            return response()->json(['success'=>$user], $this->successStatus);
+        }else{
+            return response()->json(['error'=>['Usuário não encontrado']], $this->errorStatus);
+        }
     }
 
     public function getAll(Request $request){
@@ -89,11 +120,11 @@ class UserController extends Controller
         
         $imageUri = '';
 
-        if($request->hasFile('img')) {
-           $avatar   = $request->file('img');
+        if($request->hasFile('image')) {
+           $avatar   = $request->file('image');
            $filename = $user->id . '.' . $avatar->getClientOriginalExtension();
            $imageUri = 'img/users/';
-           $request->img->move($imageUri, $filename);
+           $request->image->move($imageUri, $filename);
            $user->image = $imageUri . $filename;
            $user->save();
         }
@@ -103,7 +134,7 @@ class UserController extends Controller
     private function validateUser($request){
         return Validator::make($request->all(), [ 
             'name' => 'required', 
-            'email' => 'required|email|unique:users', 
+            'email' => 'required|email|unique:users,email,'.($request->id ? $request->id : ''), 
             'password' => 'required',
             'img' => 'nullable|image|mimes:jpeg,png,jpg|max:1000|dimensions:max_width=650,max_height=650'
         ]);
