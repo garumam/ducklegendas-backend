@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Foundation\Auth\VerifiesEmails;
+use Illuminate\Support\Facades\Gate;
 
 class UserController extends Controller
 {
@@ -55,7 +56,10 @@ class UserController extends Controller
 
     public function register(Request $request) 
     {
-         
+        if(Gate::denies('isAdmin')){
+            return response()->json(['error'=> ['Acesso negado para este conteúdo!']], $this->errorStatus);
+        } 
+
         $validator = $this->validateUser($request);
         if ($validator->fails()) { 
             return response()->json(['error'=>$validator->errors()], $this->errorStatus);            
@@ -75,6 +79,10 @@ class UserController extends Controller
 
     public function registerUpdate(Request $request) 
     {
+        if(Gate::denies('isAdmin')){
+            return response()->json(['error'=> ['Acesso negado para este conteúdo!']], $this->errorStatus);
+        }
+
         $validator = $this->validateUser($request);
         if ($validator->fails()) { 
             return response()->json(['error'=>$validator->errors()], $this->errorStatus);            
@@ -96,6 +104,11 @@ class UserController extends Controller
     }
 
     public function findUser($id){
+
+        if(Gate::denies('isAdmin')){
+            return response()->json(['error'=> ['Acesso negado para este conteúdo!']], $this->errorStatus);
+        }
+
         $user = User::find($id);
 
         if($user){
@@ -106,13 +119,16 @@ class UserController extends Controller
     }
 
     public function getAll(Request $request){
-        // $offset = $request->pagelevel * 100;
+
+        if(Gate::denies('isAdmin')){
+            return response()->json(['error'=> ['Acesso negado para este conteúdo!']], $this->errorStatus);
+        }
+
         $query = User::where('id','like', '%'.$request->search.'%')
                     ->orWhere('name','like', '%'.$request->search.'%')
                     ->orWhere('email','like', '%'.$request->search.'%');
         $users = $query->paginate(100);
-        // $totalItens = $users->count();
-        // $usersSlice = $users->splice($offset, 100);
+
         return response()->json(['success'=>$users], $this->successStatus);
     }
 

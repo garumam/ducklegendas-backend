@@ -26,7 +26,7 @@ Route::group(['namespace' => 'Api\Auth'],function () {
     //ROTAS DE AUTENTICAÇÃO
     Route::post('login', 'UserController@login');
     Route::middleware('auth:api')->group(function () {
-        Route::post('logout', 'UserController@logout');
+        Route::get('logout', 'UserController@logout');
         Route::post('register', 'UserController@register');
         Route::get('user/{id}', 'UserController@findUser');
         Route::patch('register/update/{id}', 'UserController@registerUpdate');
