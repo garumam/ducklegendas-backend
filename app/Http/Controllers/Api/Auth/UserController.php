@@ -33,11 +33,10 @@ class UserController extends Controller
 
             $user->tokens()->forcedelete();
             $tokenCreated = $user->createToken('Personal Access Token');
-            $expirateDate = Carbon::parse($tokenCreated->token->expires_at)->format('Y-m-d H:i:s');
+            $user['access_token'] = $tokenCreated->accessToken;
+            $user['token_expirate'] = Carbon::parse($tokenCreated->token->expires_at)->format('Y-m-d H:i:s');
             return response()->json(['success' =>[
                 'user' => $user,
-                'access_token' => $tokenCreated->accessToken,
-                'token_expirate' => $expirateDate
             ]], $this->successStatus);
 
         //}
