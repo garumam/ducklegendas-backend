@@ -15,6 +15,13 @@ class CreateSubtitlesTable extends Migration
     {
         Schema::create('subtitles', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->string('name');
+            $table->string('category');
+            $table->number('year');
+            $table->string('url');
+            $table->string('image');
+            $table->string('status');
+            $table->string('author');
             $table->timestamps();
         });
     }

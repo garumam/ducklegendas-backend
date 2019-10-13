@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 
-class Ranking extends Controller
+class RankingController extends Controller
 {
     //
 }

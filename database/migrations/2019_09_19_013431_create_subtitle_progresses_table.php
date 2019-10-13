@@ -15,6 +15,10 @@ class CreateSubtitleProgressesTable extends Migration
     {
         Schema::create('subtitle_progresses', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->string('name');
+            $table->string('percent');
+            $table->string('status');
+            $table->string('author');
             $table->timestamps();
         });
     }
