@@ -3,6 +3,9 @@
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\User;
+use App\Subtitle;
+use App\Category;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,6 +21,21 @@ use Illuminate\Support\Facades\DB;
 
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
+});
+
+//ROTA DE TESTE DE RELACIONAMENTOS ENTRE TABELAS
+Route::get('/relacionamento', function (Request $request) {
+
+    $categories = Category::with('subtitles')->get();
+    $subtitles = Subtitle::with('category', 'author')->get();
+    $users = User::with('subtitles.category', 'subtitles.author')
+        ->has('subtitles')->get();
+
+    return response()->json([
+        'categories' =>$categories,
+        'subtitles' =>$subtitles,
+        'users' =>$users
+    ],200); 
 });
 
 // GRUPO DE ROTAS PARA CONTROLADORES DENTRO DA PASTA Api/Auth/
@@ -52,6 +70,7 @@ Route::group(['namespace' => 'Api\Auth'],function () {
 // Route::middleware('auth:api')->group(['namespace' => 'Api'], function () {
     
 // });
+
 
 // ROTA PARA DELETAR TOKENS DE AUTENTICAÇÃO
 Route::get('error', function (){

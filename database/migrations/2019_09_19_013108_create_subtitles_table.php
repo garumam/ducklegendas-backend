@@ -16,12 +16,15 @@ class CreateSubtitlesTable extends Migration
         Schema::create('subtitles', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name');
-            $table->string('category');
-            $table->number('year');
+            $table->integer('year');
             $table->string('url');
-            $table->string('image');
+            $table->string('image')->nullable();
             $table->string('status');
-            $table->string('author');
+            $table->bigInteger('author')->unsigned();
+            $table->bigInteger('downloaded')->default(0);
+            $table->foreign('author')->references('id')->on('users');
+            $table->bigInteger('category')->unsigned();
+            $table->foreign('category')->references('id')->on('categories');
             $table->timestamps();
         });
     }

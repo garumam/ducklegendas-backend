@@ -39,6 +39,10 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
+    public function subtitles(){
+        return $this->hasMany('App\Subtitle', 'author', 'id');
+    }
+
     public function sendApiEmailVerificationNotification()
     {
         $this->notify(new VerifyEmail); // my notification
