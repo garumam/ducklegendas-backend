@@ -49,8 +49,20 @@ Route::group(['namespace' => 'Api'],function () {
             Route::patch('/{id}', 'CategoryController@update');
             Route::delete('/{id}', 'CategoryController@delete');
         });
-        Route::post('subtitles', 'SubtitleController@getAll');
-        Route::post('progress', 'SubtitleProgressController@getAll');
+        Route::group(['prefix' => 'subtitles'],function () {
+            Route::get('/{id}', 'SubtitleController@find');
+            Route::get('/', 'SubtitleController@getAll');
+            Route::post('/store', 'SubtitleController@store');
+            Route::patch('/{id}', 'SubtitleController@update');
+            Route::delete('/{id}', 'SubtitleController@delete');
+        });
+        Route::group(['prefix' => 'progress'],function () {
+            Route::get('/{id}', 'SubtitleProgressController@find');
+            Route::get('/', 'SubtitleProgressController@getAll');
+            Route::post('/store', 'SubtitleProgressController@store');
+            Route::patch('/{id}', 'SubtitleProgressController@update');
+            Route::delete('/{id}', 'SubtitleProgressController@delete');
+        });
     });
 });
 
