@@ -38,6 +38,15 @@ Route::get('/relacionamento', function (Request $request) {
     ],200); 
 });
 
+// GRUPO DE ROTAS PARA CONTROLADORES DENTRO DA PASTA Api/
+Route::group(['namespace' => 'Api'],function () {
+
+    Route::middleware('auth:api')->group(function () {
+    
+        Route::post('categories', 'CategoryController@getAll');
+    });
+});
+
 // GRUPO DE ROTAS PARA CONTROLADORES DENTRO DA PASTA Api/Auth/
 Route::group(['namespace' => 'Api\Auth'],function () {
     
@@ -50,6 +59,8 @@ Route::group(['namespace' => 'Api\Auth'],function () {
         Route::patch('register/update/{id}', 'UserController@registerUpdate');
         Route::post('users', 'UserController@getAll');
     });
+
+    
 
     //ROTAS DE VERIFICAÇÃO DE E-MAIL
     Route::group(['prefix' => 'email'], function () {  
