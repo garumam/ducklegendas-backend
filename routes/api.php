@@ -45,6 +45,7 @@ Route::group(['namespace' => 'Api'],function () {
     
         Route::post('categories', 'CategoryController@getAll');
         Route::post('subtitles', 'SubtitleController@getAll');
+        Route::post('progress', 'SubtitleProgressController@getAll');
     });
 });
 

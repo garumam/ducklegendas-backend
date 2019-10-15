@@ -1,85 +1,31 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
 use App\SubtitleProgress;
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 
 class SubtitleProgressController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //
-    }
+    public $successStatus = 200;
+    public $errorStatus = 403;
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
+    public function getAll(Request $request){
+        if(Gate::denies('isAdmin')){
+            return response()->json(['error'=> ['Acesso negado para este conteúdo!']], $this->errorStatus);
+        }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
+        $query = SubtitleProgress::where('id','like', '%'.$request->search.'%')
+                    ->orWhere('name','like', '%'.$request->search.'%')
+                    ->orWhere('percent','like', '%'.$request->search.'%')
+                    ->orWhere('status','like', '%'.$request->search.'%');
+                    
+        $subtitles = $query->paginate(100);
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\SubtitleProgress  $subtitleProgress
-     * @return \Illuminate\Http\Response
-     */
-    public function show(SubtitleProgress $subtitleProgress)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\SubtitleProgress  $subtitleProgress
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(SubtitleProgress $subtitleProgress)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\SubtitleProgress  $subtitleProgress
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, SubtitleProgress $subtitleProgress)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\SubtitleProgress  $subtitleProgress
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(SubtitleProgress $subtitleProgress)
-    {
-        //
+        return response()->json(['success'=>$subtitles], $this->successStatus);
     }
 }

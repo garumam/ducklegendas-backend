@@ -3,6 +3,7 @@
 use Illuminate\Database\Seeder;
 use App\Subtitle;
 use App\Category;
+use App\SubtitleProgress;
 
 class DatabaseSeeder extends Seeder
 {
@@ -28,6 +29,13 @@ class DatabaseSeeder extends Seeder
             'status' => 'CONCLUÍDA',
             'author' => 1,
             'category' => $category->id
+        ]);
+
+        SubtitleProgress::create([
+            'name' => 'Serie em andamento',
+            'percent' => 80,
+            'status' => 'PENDENTE',
+            'author' => 1
         ]);
  
     }
