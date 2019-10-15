@@ -25,7 +25,7 @@ class CategoryController extends Controller
         return response()->json(['success'=>$categories], $this->successStatus);
     }
 
-    public function findCategory($id){
+    public function find($id){
 
         if(Gate::denies('isAdmin')){
             return response()->json(['error'=> ['Acesso negado para este conteúdo!']], $this->errorStatus);

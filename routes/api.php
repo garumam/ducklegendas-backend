@@ -43,8 +43,8 @@ Route::group(['namespace' => 'Api'],function () {
 
     Route::middleware('auth:api')->group(function () {
         Route::group(['prefix' => 'categories'],function () {
-            Route::get('/{id}', 'CategoryController@findCategory');
-            Route::post('/', 'CategoryController@getAll');
+            Route::get('/{id}', 'CategoryController@find');
+            Route::get('/', 'CategoryController@getAll');
             Route::post('/store', 'CategoryController@store');
             Route::patch('/{id}', 'CategoryController@update');
             Route::delete('/{id}', 'CategoryController@delete');
@@ -61,10 +61,10 @@ Route::group(['namespace' => 'Api\Auth'],function () {
     Route::post('login', 'UserController@login');
     Route::middleware('auth:api')->group(function () {
         Route::group(['prefix' => 'users'],function () {
-            Route::get('/{id}', 'UserController@findUser');
-            Route::post('/', 'UserController@getAll');
-            Route::post('/store', 'UserController@register');
-            Route::patch('/{id}', 'UserController@registerUpdate');
+            Route::get('/{id}', 'UserController@find');
+            Route::get('/', 'UserController@getAll');
+            Route::post('/store', 'UserController@store');
+            Route::patch('/{id}', 'UserController@update');
             Route::delete('/{id}', 'UserController@delete');
         });
     });

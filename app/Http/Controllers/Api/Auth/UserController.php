@@ -53,7 +53,7 @@ class UserController extends Controller
         }
     }
 
-    public function register(Request $request) 
+    public function store(Request $request) 
     {
         if(Gate::denies('isAdmin')){
             return response()->json(['error'=> ['Acesso negado para este conteúdo!']], $this->errorStatus);
@@ -79,7 +79,7 @@ class UserController extends Controller
         return response()->json(['error'=> ['Ocorreu um problema inesperado por favor tente novamente!']], $this->errorStatus);
     }
 
-    public function registerUpdate(Request $request) 
+    public function update(Request $request) 
     {
         if(Gate::denies('isAdmin')){
             return response()->json(['error'=> ['Acesso negado para este conteúdo!']], $this->errorStatus);
@@ -104,7 +104,7 @@ class UserController extends Controller
         return response()->json(['error'=>['Usuário não encontrado']], $this->errorStatus);    
     }
 
-    public function findUser($id){
+    public function find($id){
 
         if(Gate::denies('isAdmin')){
             return response()->json(['error'=> ['Acesso negado para este conteúdo!']], $this->errorStatus);
