@@ -23,7 +23,7 @@ class SubtitleController extends Controller
                     ->orWhere('name','like', '%'.$request->search.'%')
                     ->orWhere('year','like', '%'.$request->search.'%')
                     ->orWhere('category','like', '%'.$request->search.'%')
-                    ->orWhere('status','like', '%'.$request->search.'%');
+                    ->orWhere('status','like', '%'.$request->search.'%')->with('category');
                     
         $subtitles = $query->paginate(100);
 

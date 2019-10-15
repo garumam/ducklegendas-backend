@@ -26,7 +26,7 @@ class DatabaseSeeder extends Seeder
             'year' => 2019,
             'url' => 'https://www.google.com/',
             'image' => '',
-            'status' => 'CONCLUÍDA',
+            'status' => 'APROVADA',
             'author' => 1,
             'category' => $category->id
         ]);
@@ -34,7 +34,7 @@ class DatabaseSeeder extends Seeder
         SubtitleProgress::create([
             'name' => 'Serie em andamento',
             'percent' => 80,
-            'status' => 'PENDENTE',
+            'status' => 'EM ANDAMENTO',
             'author' => 1
         ]);
  
