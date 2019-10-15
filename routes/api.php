@@ -44,6 +44,7 @@ Route::group(['namespace' => 'Api'],function () {
     Route::middleware('auth:api')->group(function () {
     
         Route::post('categories', 'CategoryController@getAll');
+        Route::post('subtitles', 'SubtitleController@getAll');
     });
 });
 
