@@ -42,8 +42,13 @@ Route::get('/relacionamento', function (Request $request) {
 Route::group(['namespace' => 'Api'],function () {
 
     Route::middleware('auth:api')->group(function () {
-    
-        Route::post('categories', 'CategoryController@getAll');
+        Route::group(['prefix' => 'categories'],function () {
+            Route::get('/{id}', 'CategoryController@findCategory');
+            Route::post('/', 'CategoryController@getAll');
+            Route::post('/store', 'CategoryController@store');
+            Route::patch('/{id}', 'CategoryController@update');
+            Route::delete('/{id}', 'CategoryController@delete');
+        });
         Route::post('subtitles', 'SubtitleController@getAll');
         Route::post('progress', 'SubtitleProgressController@getAll');
     });
@@ -55,11 +60,13 @@ Route::group(['namespace' => 'Api\Auth'],function () {
     //ROTAS DE AUTENTICAÇÃO
     Route::post('login', 'UserController@login');
     Route::middleware('auth:api')->group(function () {
-        Route::get('logout', 'UserController@logout');
-        Route::post('register', 'UserController@register');
-        Route::get('user/{id}', 'UserController@findUser');
-        Route::patch('register/update/{id}', 'UserController@registerUpdate');
-        Route::post('users', 'UserController@getAll');
+        Route::group(['prefix' => 'users'],function () {
+            Route::get('/{id}', 'UserController@findUser');
+            Route::post('/', 'UserController@getAll');
+            Route::post('/store', 'UserController@register');
+            Route::patch('/{id}', 'UserController@registerUpdate');
+            Route::delete('/{id}', 'UserController@delete');
+        });
     });
 
     
@@ -78,12 +85,6 @@ Route::group(['namespace' => 'Api\Auth'],function () {
     });
 
 });
-
-// // GRUPO DE ROTAS PARA CONTROLADORES DENTRO DA PASTA Api/
-// Route::middleware('auth:api')->group(['namespace' => 'Api'], function () {
-    
-// });
-
 
 // ROTA PARA DELETAR TOKENS DE AUTENTICAÇÃO
 Route::get('error', function (){

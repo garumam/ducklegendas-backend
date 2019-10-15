@@ -24,4 +24,66 @@ class CategoryController extends Controller
 
         return response()->json(['success'=>$categories], $this->successStatus);
     }
+
+    public function findCategory($id){
+
+        if(Gate::denies('isAdmin')){
+            return response()->json(['error'=> ['Acesso negado para este conteúdo!']], $this->errorStatus);
+        }
+
+        $category = Category::find($id);
+
+        if($category){
+            return response()->json(['success'=>$category], $this->successStatus);
+        }else{
+            return response()->json(['error'=>['Usuário não encontrado']], $this->errorStatus);
+        }
+    }
+
+    public function store(Request $request){
+        if(Gate::denies('isAdmin')){
+            return response()->json(['error'=> ['Acesso negado para este conteúdo!']], $this->errorStatus);
+        }
+
+        $validator = $this->validateCategory($request);
+        if ($validator->fails()) { 
+            return response()->json(['error'=>$validator->errors()], $this->errorStatus);            
+        }
+
+        $category = Category::create($request->all()); 
+        
+        if($category){
+            return response()->json(['success'=>['Cadastro efetuado com sucesso']], $this->successStatus); 
+        }
+        return response()->json(['error'=> ['Ocorreu um problema inesperado por favor tente novamente!']], $this->errorStatus);
+    }
+
+    public function update(Request $request) 
+    {
+        if(Gate::denies('isAdmin')){
+            return response()->json(['error'=> ['Acesso negado para este conteúdo!']], $this->errorStatus);
+        }
+
+        $validator = $this->validateCategory($request);
+        if ($validator->fails()) { 
+            return response()->json(['error'=>$validator->errors()], $this->errorStatus);            
+        }
+        
+        $category = Category::find($request->id);
+
+        if($category){
+
+            $category->update($request->all());
+
+            return response()->json(['success'=>['Cadastro atualizado com sucesso']], $this->successStatus);
+        }
+
+        return response()->json(['error'=>['Usuário não encontrado']], $this->errorStatus);   
+    }
+
+    private function validateCategory($request){
+        return Validator::make($request->all(), [ 
+            'name' => 'required|unique:categories'
+        ]);
+    }
 }

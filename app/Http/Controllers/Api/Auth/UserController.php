@@ -68,12 +68,15 @@ class UserController extends Controller
         $input['password'] = bcrypt($input['password']);
         $user = User::create($input); 
         
-        $this->update_avatar($user, $request);
+        if($user){
+            $this->update_avatar($user, $request);
 
-        //$user->sendApiEmailVerificationNotification();
-      
-        //$success["message"] = "Please confirm yourself by clicking on verify user button sent to you on your email";
-        return response()->json(['success'=>['Cadastro efetuado com sucesso']], $this->successStatus); 
+            //$user->sendApiEmailVerificationNotification();
+        
+            //$success["message"] = "Please confirm yourself by clicking on verify user button sent to you on your email";
+            return response()->json(['success'=>['Cadastro efetuado com sucesso']], $this->successStatus); 
+        }
+        return response()->json(['error'=> ['Ocorreu um problema inesperado por favor tente novamente!']], $this->errorStatus);
     }
 
     public function registerUpdate(Request $request) 
@@ -96,10 +99,9 @@ class UserController extends Controller
             $user->update($input);
 
             return response()->json(['success'=>['Cadastro atualizado com sucesso']], $this->successStatus);
-        }else{
-            return response()->json(['error'=>['Usuário não encontrado']], $this->errorStatus);
-        }  
-         
+        }
+
+        return response()->json(['error'=>['Usuário não encontrado']], $this->errorStatus);    
     }
 
     public function findUser($id){
