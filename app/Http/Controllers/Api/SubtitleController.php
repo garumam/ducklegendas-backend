@@ -36,7 +36,7 @@ class SubtitleController extends Controller
             return response()->json(['error'=> ['Acesso negado para este conteúdo!']], $this->errorStatus);
         }
 
-        $subtitle = Subtitle::find($id);
+        $subtitle = Subtitle::find($id)->with('category')->first();
 
         if($subtitle){
             return response()->json(['success'=>$subtitle], $this->successStatus);
