@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Subtitle;
+use App\Category;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -27,7 +28,7 @@ class SubtitleController extends Controller
                     
         $subtitles = $query->paginate(100);
 
-        return response()->json(['success'=>$subtitles], $this->successStatus);
+        return response()->json(['success'=>$subtitles, 'categories' => Category::all()], $this->successStatus);
     }
 
     public function find($id){
@@ -37,9 +38,9 @@ class SubtitleController extends Controller
         }
 
         $subtitle = Subtitle::with('category')->find($id);
-
-        if($subtitle){
-            return response()->json(['success'=>$subtitle], $this->successStatus);
+        $categories = Category::all();
+        if($subtitle || $categories){
+            return response()->json(['success'=>$subtitle, 'categories' => $categories], $this->successStatus);
         }else{
             return response()->json(['error'=>['Usuário não encontrado']], $this->errorStatus);
         }
