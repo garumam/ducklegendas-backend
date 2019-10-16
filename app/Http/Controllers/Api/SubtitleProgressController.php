@@ -28,4 +28,19 @@ class SubtitleProgressController extends Controller
 
         return response()->json(['success'=>$subtitles], $this->successStatus);
     }
+
+    public function find($id){
+
+        if(Gate::denies('isAdmin')){
+            return response()->json(['error'=> ['Acesso negado para este conteúdo!']], $this->errorStatus);
+        }
+
+        $subtitle = SubtitleProgress::find($id);
+       
+        if($subtitle){
+            return response()->json(['success'=>$subtitle], $this->successStatus);
+        }else{
+            return response()->json(['error'=>['Usuário não encontrado']], $this->errorStatus);
+        }
+    }
 }
