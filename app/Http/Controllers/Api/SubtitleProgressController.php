@@ -43,4 +43,33 @@ class SubtitleProgressController extends Controller
             return response()->json(['error'=>['Usuário não encontrado']], $this->errorStatus);
         }
     }
+
+    public function store(Request $request){
+        if(Gate::denies('isAdmin')){
+            return response()->json(['error'=> ['Acesso negado para este conteúdo!']], $this->errorStatus);
+        }
+        
+        $validator = $this->validateSubtitleProgress($request);
+        if ($validator->fails()) { 
+            return response()->json(['error'=>$validator->errors()], $this->errorStatus);            
+        }
+        $input = $request->all();
+        $input['status'] = 'PENDENTE';
+        $input['author'] = $request->user()->id;
+        $subtitle = SubtitleProgress::create($input); 
+
+        if($subtitle){
+            return response()->json(['success'=>['Cadastro efetuado com sucesso']], $this->successStatus); 
+        }
+        return response()->json(['error'=> ['Ocorreu um problema inesperado por favor tente novamente!']], $this->errorStatus);
+    }
+
+    private function validateSubtitleProgress($request){
+        return Validator::make($request->all(), [ 
+            'name' => 'required|string', 
+            'percent' => 'required|integer', 
+            'status' => 'nullable', 
+            'author' => 'nullable', 
+        ]);
+    }
 }
