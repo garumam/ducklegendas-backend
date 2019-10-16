@@ -72,6 +72,7 @@ Route::group(['namespace' => 'Api\Auth'],function () {
     //ROTAS DE AUTENTICAÇÃO
     Route::post('login', 'UserController@login');
     Route::middleware('auth:api')->group(function () {
+        Route::get('logout', 'UserController@logout');
         Route::group(['prefix' => 'users'],function () {
             Route::get('/{id}', 'UserController@find');
             Route::get('/', 'UserController@getAll');
