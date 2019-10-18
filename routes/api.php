@@ -47,21 +47,21 @@ Route::group(['namespace' => 'Api'],function () {
             Route::get('/', 'CategoryController@getAll');
             Route::post('/store', 'CategoryController@store');
             Route::patch('/{id}', 'CategoryController@update');
-            Route::delete('/{id}', 'CategoryController@delete');
+            Route::delete('/{id}', 'CategoryController@destroy');
         });
         Route::group(['prefix' => 'subtitles'],function () {
             Route::get('/{id}', 'SubtitleController@find');
             Route::get('/', 'SubtitleController@getAll');
             Route::post('/store', 'SubtitleController@store');
             Route::patch('/{id}', 'SubtitleController@update');
-            Route::delete('/{id}', 'SubtitleController@delete');
+            Route::delete('/{id}', 'SubtitleController@destroy');
         });
         Route::group(['prefix' => 'progress'],function () {
             Route::get('/{id}', 'SubtitleProgressController@find');
             Route::get('/', 'SubtitleProgressController@getAll');
             Route::post('/store', 'SubtitleProgressController@store');
             Route::patch('/{id}', 'SubtitleProgressController@update');
-            Route::delete('/{id}', 'SubtitleProgressController@delete');
+            Route::delete('/{id}', 'SubtitleProgressController@destroy');
         });
     });
 });
@@ -78,7 +78,7 @@ Route::group(['namespace' => 'Api\Auth'],function () {
             Route::get('/', 'UserController@getAll');
             Route::post('/store', 'UserController@store');
             Route::patch('/{id}', 'UserController@update');
-            Route::delete('/{id}', 'UserController@delete');
+            Route::delete('/{id}', 'UserController@destroy');
         });
     });
 
