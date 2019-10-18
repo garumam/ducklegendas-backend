@@ -86,6 +86,19 @@ class SubtitleProgressController extends Controller
         return response()->json(['error'=>['Usuário não encontrado']], $this->errorStatus);   
     }
 
+    public function destroy($id) {
+        if(Gate::denies('isAdmin')){
+            return response()->json(['error'=> ['Acesso negado para este conteúdo!']], $this->errorStatus);
+        }
+
+        $subtitle = SubtitleProgress::find($id);
+
+        if($subtitle->delete()){
+            return response()->json(['success'=>['Cadastro excluido com sucesso']], $this->successStatus);
+        }
+        return response()->json(['error'=>['Usuário não encontrado']], $this->errorStatus);   
+    }
+
     private function validateSubtitleProgress($request){
         return Validator::make($request->all(), [ 
             'name' => 'required|string', 
