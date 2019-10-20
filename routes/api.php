@@ -67,6 +67,9 @@ Route::group(['namespace' => 'Api'],function () {
         Route::group(['prefix' => 'rankings'],function () {
             Route::get('/', 'RankingController@getAll');
         });
+        Route::group(['prefix' => 'pending'],function () {
+            Route::get('/', 'SubtitleController@pendingSubtitles');
+        });
     });
 });
 

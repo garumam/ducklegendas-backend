@@ -101,6 +101,19 @@ class SubtitleController extends Controller
         }
         return response()->json(['error'=>['Usuário não encontrado']], $this->errorStatus);   
     }
+    
+    public function pendingSubtitles(Request $request) {
+        if(Gate::denies('isAdmin')){
+            return response()->json(['error'=> ['Acesso negado para este conteúdo!']], $this->errorStatus);
+        }
+
+        $query = Subtitle::where('status','=', "PENDENTE")
+        ->Where('name','like', '%'.$request->search.'%');
+        $subtitles = $query->paginate(100);
+
+        return response()->json(['success'=>$subtitles], $this->successStatus);
+
+    }
 
     private function validateSubtitle($request){
         return Validator::make($request->all(), [ 
