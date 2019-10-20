@@ -10,6 +10,7 @@ use App\User;
 use Carbon\Carbon;
 use Illuminate\Foundation\Auth\VerifiesEmails;
 use Illuminate\Support\Facades\Gate;
+use App\Utils\Utils;
 
 class UserController extends Controller
 {
@@ -69,7 +70,7 @@ class UserController extends Controller
         $user = User::create($input); 
         
         if($user){
-            $this->update_avatar($user, $request);
+            Utils::update_image($user, $request, 'users');
 
             //$user->sendApiEmailVerificationNotification();
         
@@ -95,7 +96,8 @@ class UserController extends Controller
         $user = User::find($request->id);
 
         if($user){
-            $this->update_avatar($user, $request);
+
+            Utils::update_image($user, $request, 'users');
             $user->update($input);
 
             return response()->json(['success'=>['Cadastro atualizado com sucesso']], $this->successStatus);
@@ -131,21 +133,6 @@ class UserController extends Controller
         $users = $query->paginate(100);
 
         return response()->json(['success'=>$users], $this->successStatus);
-    }
-
-    public function update_avatar($user ,Request $request) {
-        
-        $imageUri = '';
-
-        if($request->hasFile('image')) {
-           $avatar   = $request->file('image');
-           $filename = $user->id . '.' . $avatar->getClientOriginalExtension();
-           $imageUri = 'img/users/';
-           $request->image->move($imageUri, $filename);
-           $user->image = $imageUri . $filename;
-           $user->save();
-        }
-        return $imageUri;
     }
 
     public function destroy($id) {

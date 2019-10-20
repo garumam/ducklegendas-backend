@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
+use App\Utils\Utils;
 
 class SubtitleController extends Controller
 {
@@ -55,12 +56,13 @@ class SubtitleController extends Controller
         if ($validator->fails()) { 
             return response()->json(['error'=>$validator->errors()], $this->errorStatus);            
         }
-        $input = $request->all();
+        $input = $request->except('image');
         $input['status'] = 'PENDENTE';
         $input['author'] = $request->user()->id;
         $subtitle = Subtitle::create($input); 
 
         if($subtitle){
+            Utils::update_image($subtitle, $request, 'subtitles');
             return response()->json(['success'=>['Cadastro efetuado com sucesso']], $this->successStatus); 
         }
         return response()->json(['error'=> ['Ocorreu um problema inesperado por favor tente novamente!']], $this->errorStatus);
@@ -81,7 +83,8 @@ class SubtitleController extends Controller
 
         if($subtitle){
 
-            $subtitle->update($request->all());
+            Utils::update_image($subtitle, $request, 'subtitles');
+            $subtitle->update($request->except('image'));
 
             return response()->json(['success'=>['Cadastro atualizado com sucesso']], $this->successStatus);
         }
