@@ -19,7 +19,9 @@ class RankingController extends Controller
         
         $query = User::withCount('subtitles')->orderBy('subtitles_count','desc');
         $user = $query->paginate(100);
-
+        $user = $user->each(function ($item, $key) use ($request) {
+            $item->id = ($key + 1) + ($request->page - 1) * 100;
+        });
         return response()->json(['success'=>$user], $this->successStatus);
     }
 
