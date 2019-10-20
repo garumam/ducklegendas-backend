@@ -17,7 +17,7 @@ class RankingController extends Controller
             return response()->json(['error'=> ['Acesso negado para este conteúdo!']], $this->errorStatus);
         }
         
-        $query = User::withCount('subtitles')->orderBy('subtitles_count','desc');
+        $query = User::withCount('subtitles')->where('name','like', '%'.$request->search.'%')->orderBy('subtitles_count','desc');
         $user = $query->paginate(100);
         $user->data = $user->each(function ($item, $key) use ($request) {
             $page = $request->has('page')? $request->page : 1;
