@@ -63,6 +63,10 @@ Route::group(['namespace' => 'Api'],function () {
             Route::patch('/{id}', 'SubtitleProgressController@update');
             Route::delete('/{id}', 'SubtitleProgressController@destroy');
         });
+
+        Route::group(['prefix' => 'rankings'],function () {
+            Route::get('/', 'RankingController@getAll');
+        });
     });
 });
 
