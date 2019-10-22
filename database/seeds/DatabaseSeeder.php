@@ -4,6 +4,7 @@ use Illuminate\Database\Seeder;
 use App\Subtitle;
 use App\Category;
 use App\SubtitleProgress;
+use App\Gallery;
 
 class DatabaseSeeder extends Seeder
 {
@@ -37,6 +38,17 @@ class DatabaseSeeder extends Seeder
             'status' => 'EM ANDAMENTO',
             'author' => 1
         ]);
- 
+            
+        Gallery::create([
+            'name' => 'peaky_blinders',
+            'tags' => 'ciganos gangue mafia peaky blinders',
+            'image' => 'img/subtitles/1.jpg'
+        ]);
+
+        Gallery::create([
+            'name' => 'stranger_things',
+            'tags' => 'ficção científica terror stranger things',
+            'image' => 'img/subtitles/2.jpg'
+        ]);
     }
 }

@@ -153,7 +153,7 @@ class UserController extends Controller
             'name' => 'required', 
             'email' => 'required|email|unique:users,email,'.($request->id ? $request->id : ''), 
             'password' => 'required',
-            'img' => 'nullable|image|mimes:jpeg,png,jpg|max:1000|dimensions:max_width=650,max_height=650'
+            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:1000|dimensions:max_width=650,max_height=650'
         ]);
     }
     private function validateLogin($request){

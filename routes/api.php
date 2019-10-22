@@ -70,6 +70,13 @@ Route::group(['namespace' => 'Api'],function () {
         Route::group(['prefix' => 'pending'],function () {
             Route::get('/', 'SubtitleController@pendingSubtitles');
         });
+        Route::group(['prefix' => 'gallery'],function () {
+            Route::get('/{id}', 'GalleryController@find');
+            Route::get('/', 'GalleryController@getAll');
+            Route::post('/store', 'GalleryController@store');
+            Route::patch('/{id}', 'GalleryController@update');
+            Route::delete('/{id}', 'GalleryController@destroy');
+        });
     });
 });
 
