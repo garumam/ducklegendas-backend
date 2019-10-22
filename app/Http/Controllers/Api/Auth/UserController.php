@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use App\User;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\File;
 use Illuminate\Foundation\Auth\VerifiesEmails;
 use Illuminate\Support\Facades\Gate;
 use App\Utils\Utils;
@@ -86,6 +87,10 @@ class UserController extends Controller
             return response()->json(['error'=> ['Acesso negado para este conteúdo!']], $this->errorStatus);
         }
 
+        if(!$request->hasFile('image')){
+            $request->merge(['image' => null]);
+        }
+
         $validator = $this->validateUser($request);
         if ($validator->fails()) { 
             return response()->json(['error'=>$validator->errors()], $this->errorStatus);            
@@ -96,8 +101,11 @@ class UserController extends Controller
         $user = User::find($request->id);
 
         if($user){
-
-            Utils::update_image($user, $request, 'users');
+            if($request->hasFile('image')){
+                File::delete(public_path($user->image));
+                Utils::update_image($user, $request, 'users');
+            }
+            
             $user->update($input);
 
             return response()->json(['success'=>['Cadastro atualizado com sucesso']], $this->successStatus);
@@ -142,7 +150,9 @@ class UserController extends Controller
 
         $user = User::find($id);
 
-        if($user->delete()){
+        if($user){
+            File::delete(public_path($user->image));
+            $user->delete();
             return response()->json(['success'=>['Cadastro excluido com sucesso']], $this->successStatus);
         }
         return response()->json(['error'=>['Usuário não encontrado']], $this->errorStatus);   
