@@ -39,16 +39,16 @@ class DatabaseSeeder extends Seeder
             'author' => 1
         ]);
             
-        Gallery::create([
-            'name' => 'peaky_blinders',
-            'tags' => 'ciganos gangue mafia peaky blinders',
-            'image' => 'img/subtitles/1.jpg'
-        ]);
+        // Gallery::create([
+        //     'name' => 'peaky_blinders',
+        //     'tags' => 'ciganos gangue mafia peaky blinders',
+        //     'image' => 'img/subtitles/1.jpg'
+        // ]);
 
-        Gallery::create([
-            'name' => 'stranger_things',
-            'tags' => 'ficção científica terror stranger things',
-            'image' => 'img/subtitles/2.jpg'
-        ]);
+        // Gallery::create([
+        //     'name' => 'stranger_things',
+        //     'tags' => 'ficção científica terror stranger things',
+        //     'image' => 'img/subtitles/2.jpg'
+        // ]);
     }
 }
