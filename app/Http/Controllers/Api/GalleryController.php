@@ -106,6 +106,11 @@ class GalleryController extends Controller
             'name' => 'required|max:191',
             'tags' => 'nullable|max:191',
             'image' => ($required?'required':'nullable').'|image|mimes:jpeg,png,jpg|max:1000|dimensions:max_width=650,max_height=700'
+        ],[
+            'image.required' => 'Imagem é obrigatória.',
+            'image' => 'Imagem inválida.',
+            'mimes' => 'Formatos de imagem aceitos: jpeg,png,jpg.',
+            'dimensions' => 'As dimensões da imagem não devem exceder 650x700.'
         ]);
     }
 

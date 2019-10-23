@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Validation\Rule;
 
 class SubtitleProgressController extends Controller
 {
@@ -54,6 +55,9 @@ class SubtitleProgressController extends Controller
             return response()->json(['error'=>$validator->errors()], $this->errorStatus);            
         }
         $input = $request->all();
+        if(empty($input['status']))
+            $input['status'] = 'EM ANDAMENTO';
+
         $input['author'] = $request->user()->id;
         $subtitle = SubtitleProgress::create($input); 
 
@@ -103,7 +107,10 @@ class SubtitleProgressController extends Controller
         return Validator::make($request->all(), [ 
             'name' => 'required|string', 
             'percent' => 'required|integer', 
-            'status' => 'nullable', 
+            'status' => [
+                'nullable',
+                Rule::in(['EM ANDAMENTO', 'CONCLUÍDA']),
+            ], 
             'author' => 'nullable', 
         ]);
     }

@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use App\Utils\Utils;
+use Illuminate\Validation\Rule;
 
 class SubtitleController extends Controller
 {
@@ -57,7 +58,9 @@ class SubtitleController extends Controller
             return response()->json(['error'=>$validator->errors()], $this->errorStatus);            
         }
         $input = $request->all();
-        $input['status'] = 'PENDENTE';
+        if(empty($input['status']))
+            $input['status'] = 'PENDENTE';
+        
         $input['author'] = $request->user()->id;
         $subtitle = Subtitle::create($input); 
 
@@ -122,7 +125,10 @@ class SubtitleController extends Controller
             'year' => 'required|integer', 
             'url' => 'required|string', 
             'image' => 'nullable', 
-            'status' => 'nullable', 
+            'status' => [
+                'nullable',
+                Rule::in(['APROVADA', 'PENDENTE']),
+            ], 
             'author' => 'nullable', 
             'category' => 'required'
         ]);

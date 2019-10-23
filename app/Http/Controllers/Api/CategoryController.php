@@ -93,6 +93,8 @@ class CategoryController extends Controller
     private function validateCategory($request){
         return Validator::make($request->all(), [ 
             'name' => 'required|unique:categories'
+        ],[
+            'unique' => 'Este nome já está em uso!'
         ]);
     }
 }
