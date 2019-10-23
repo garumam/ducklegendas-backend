@@ -56,13 +56,12 @@ class SubtitleController extends Controller
         if ($validator->fails()) { 
             return response()->json(['error'=>$validator->errors()], $this->errorStatus);            
         }
-        $input = $request->except('image');
+        $input = $request->all();
         $input['status'] = 'PENDENTE';
         $input['author'] = $request->user()->id;
         $subtitle = Subtitle::create($input); 
 
         if($subtitle){
-            Utils::update_image($subtitle, $request, 'subtitles');
             return response()->json(['success'=>['Cadastro efetuado com sucesso']], $this->successStatus); 
         }
         return response()->json(['error'=> ['Ocorreu um problema inesperado por favor tente novamente!']], $this->errorStatus);
@@ -83,8 +82,7 @@ class SubtitleController extends Controller
 
         if($subtitle){
 
-            Utils::update_image($subtitle, $request, 'subtitles');
-            $subtitle->update($request->except('image'));
+            $subtitle->update($request->all());
 
             return response()->json(['success'=>['Cadastro atualizado com sucesso']], $this->successStatus);
         }
