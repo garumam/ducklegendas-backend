@@ -32,9 +32,11 @@ class RankingController extends Controller
         unset($value);
 
         $user->data = $user->each(function ($item) use ($allArray) {
-            foreach($allArray as $value){
-                if($item->id === $value['id'])
-                    $item->id = $value['position'];
+            foreach($allArray as $valueItem){
+                if($item->id === $valueItem['id']){
+                    $item->id = $valueItem['position'];
+                    break;
+                }
             }
         });
         return response()->json(['success'=>$user], $this->successStatus);
