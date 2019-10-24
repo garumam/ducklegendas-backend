@@ -8,10 +8,10 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use App\User;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\File;
 use Illuminate\Foundation\Auth\VerifiesEmails;
 use Illuminate\Support\Facades\Gate;
 use App\Utils\Utils;
+use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
@@ -102,7 +102,7 @@ class UserController extends Controller
 
         if($user){
             if($request->hasFile('image')){
-                File::delete(public_path($user->image));
+                Storage::delete("/public/".$user->image);
                 Utils::update_image($user, $request, 'users');
             }
             
@@ -151,9 +151,12 @@ class UserController extends Controller
         $user = User::find($id);
 
         if($user){
-            File::delete(public_path($user->image));
-            $user->delete();
-            return response()->json(['success'=>['Cadastro excluido com sucesso']], $this->successStatus);
+            $path = "/public/".$user->image;
+            if(Storage::delete($path) || !Storage::exists($path)){
+                $user->delete();
+                return response()->json(['success'=>['Cadastro excluido com sucesso']], $this->successStatus);
+            }
+            return response()->json(['error'=>['Não foi possível deletar o usuário']], $this->errorStatus);
         }
         return response()->json(['error'=>['Usuário não encontrado']], $this->errorStatus);   
     }

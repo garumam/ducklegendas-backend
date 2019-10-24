@@ -1,6 +1,7 @@
 <?php
 namespace App\Utils;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class Utils {
     public static function update_image($model ,Request $request, $folderName) {
@@ -10,9 +11,10 @@ class Utils {
             $image   = $request->file('image');
             $filename = $model->id . '.' . $image->getClientOriginalExtension();
             $imageUri = 'img/'.$folderName.'/';
-            $request->image->move($imageUri, $filename);
-            $model->image = $imageUri . $filename;
-            $model->save();
+            Storage::putFileAs('public/'.$imageUri, $image, $filename);
+            $imageUri = $imageUri . $filename;
+            $model->update(['image'=> $imageUri]);
+            $model->touch();
         }
         return $imageUri;
     }

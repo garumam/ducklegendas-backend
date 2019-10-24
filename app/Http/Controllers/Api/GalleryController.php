@@ -7,8 +7,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Validator;
 use App\Utils\Utils;
-use Illuminate\Support\Facades\File;
 use App\Gallery;
+use Illuminate\Support\Facades\Storage;
 
 class GalleryController extends Controller
 {
@@ -54,7 +54,7 @@ class GalleryController extends Controller
 
         $gallery = Gallery::create($request->except('image'));
         if($gallery){
-            Utils::update_image($gallery, $request, 'subtitles');
+            Utils::update_image($gallery, $request, 'subs');
             return response()->json(['success'=> ['Imagem cadastrada com sucesso!']], $this->successStatus);
         }
         return response()->json(['error'=> ['Erro inesperado, não foi possível salvar a imagem!']], $this->errorStatus);
@@ -77,8 +77,8 @@ class GalleryController extends Controller
 
         if($gallery){
             if($request->hasFile('image')){
-                File::delete(public_path($gallery->image));
-                Utils::update_image($gallery, $request, 'subtitles');
+                Storage::delete("/public/".$gallery->image);
+                Utils::update_image($gallery, $request, 'subs');
             }
             $gallery->update($request->except('image'));
             return response()->json(['success'=>['Cadastro atualizado com sucesso']], $this->successStatus);
@@ -94,9 +94,12 @@ class GalleryController extends Controller
         $gallery = Gallery::find($id);
         
         if($gallery){
-            File::delete(public_path($gallery->image));
-            $gallery->delete();
-            return response()->json(['success'=>['Imagem excluída com sucesso']], $this->successStatus);
+            $path = "/public/".$gallery->image;
+            if(Storage::delete($path) || !Storage::exists($path)){
+                $gallery->delete();
+                return response()->json(['success'=>['Imagem excluída com sucesso']], $this->successStatus);
+            }
+            return response()->json(['error'=>['Não foi possível deletar a imagem tente novamente!']], $this->errorStatus);  
         }
         return response()->json(['error'=>['Imagem não encontrada']], $this->errorStatus);   
     }
