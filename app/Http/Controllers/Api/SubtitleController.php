@@ -19,7 +19,7 @@ class SubtitleController extends Controller
 
     public function list(Request $request){
 
-        $query = Subtitle::where(function($q) use ($request){
+        $query = Subtitle::where('status','=','APROVADA')->where(function($q) use ($request){
             $q->where('name','like', '%'.$request->search.'%')
                     ->orWhere('year','like', '%'.$request->search.'%')
                     ->orWhere('category','like', '%'.$request->search.'%');
