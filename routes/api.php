@@ -41,6 +41,8 @@ Route::get('/relacionamento', function (Request $request) {
 // GRUPO DE ROTAS PARA CONTROLADORES DENTRO DA PASTA Api/
 Route::group(['namespace' => 'Api'],function () {
 
+    Route::get('subtitles/list', 'SubtitleController@list');
+
     Route::middleware('auth:api')->group(function () {
         Route::group(['prefix' => 'categories'],function () {
             Route::get('/{id}', 'CategoryController@find');

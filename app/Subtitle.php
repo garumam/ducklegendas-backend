@@ -7,7 +7,16 @@ use Illuminate\Database\Eloquent\Model;
 class Subtitle extends Model
 {
     protected $fillable = [
-        'name', 'year', 'url', 'image', 'status', 'author', 'downloaded', 'category'
+        'name', 
+        'year', 
+        'url', 
+        'image', 
+        'status', 
+        'author', 
+        'downloaded', 
+        'category', 
+        'type',
+        'episode'
     ];
 
     public function category(){

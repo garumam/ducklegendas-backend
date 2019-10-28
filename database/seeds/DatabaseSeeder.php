@@ -26,6 +26,8 @@ class DatabaseSeeder extends Seeder
             'name' => 'Serie da google',
             'year' => 2019,
             'url' => 'https://www.google.com/',
+            'episode' => 's01e03',
+            'type' => 'SERIE',
             'image' => '',
             'status' => 'APROVADA',
             'author' => 1,

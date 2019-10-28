@@ -17,6 +17,25 @@ class SubtitleController extends Controller
     public $successStatus = 200;
     public $errorStatus = 403;
 
+    public function list(Request $request){
+
+        $query = Subtitle::where(function($q) use ($request){
+            $q->where('name','like', '%'.$request->search.'%')
+                    ->orWhere('year','like', '%'.$request->search.'%')
+                    ->orWhere('category','like', '%'.$request->search.'%');
+        });
+        if(!empty($request->type))
+            $query->where('type',$request->type);
+
+        $query->with(['category','author'=>function($query){
+            $query->select('id','name');
+        }]);
+
+        $subtitles = $query->paginate(12);
+
+        return response()->json(['success'=>$subtitles], $this->successStatus);
+    }
+
     public function getAll(Request $request){
         if(Gate::denies('isAdmin')){
             return response()->json(['error'=> ['Acesso negado para este conteúdo!']], $this->errorStatus);
@@ -61,6 +80,9 @@ class SubtitleController extends Controller
         if(empty($input['status']))
             $input['status'] = 'PENDENTE';
         
+        if(empty($input['type']))
+            $input['type'] = 'FILME';
+
         $input['author'] = $request->user()->id;
         $subtitle = Subtitle::create($input); 
 
@@ -84,8 +106,11 @@ class SubtitleController extends Controller
         $subtitle = Subtitle::find($request->id);
 
         if($subtitle){
+            $input = $request->all();
+            if(empty($input['type']))
+                $input['type'] = 'FILME';
 
-            $subtitle->update($request->all());
+            $subtitle->update($input);
 
             return response()->json(['success'=>['Cadastro atualizado com sucesso']], $this->successStatus);
         }
@@ -123,7 +148,9 @@ class SubtitleController extends Controller
         return Validator::make($request->all(), [ 
             'name' => 'required|string', 
             'year' => 'required|integer', 
-            'url' => 'required|string', 
+            'url' => 'required|string',
+            'type' => 'nullable|string',
+            'episode' => 'nullable|string',
             'image' => 'nullable', 
             'status' => [
                 'nullable',

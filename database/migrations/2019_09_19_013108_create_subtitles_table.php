@@ -18,6 +18,8 @@ class CreateSubtitlesTable extends Migration
             $table->string('name');
             $table->integer('year');
             $table->string('url');
+            $table->string('type');
+            $table->string('episode')->nullable();
             $table->string('image')->nullable();
             $table->string('status');
             $table->bigInteger('author')->unsigned();
