@@ -16,7 +16,8 @@ class Subtitle extends Model
         'downloaded', 
         'category', 
         'type',
-        'episode'
+        'episode',
+        'created_at'
     ];
 
     public function category(){

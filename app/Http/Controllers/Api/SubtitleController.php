@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use App\Utils\Utils;
 use Illuminate\Validation\Rule;
+use Carbon\Carbon;
 
 class SubtitleController extends Controller
 {
@@ -24,8 +25,42 @@ class SubtitleController extends Controller
                     ->orWhere('year','like', '%'.$request->search.'%')
                     ->orWhere('category','like', '%'.$request->search.'%');
         });
-        if(!empty($request->type))
+        $today = Carbon::now();
+
+        switch($request->order){
+            case "hoje":
+                $firstDate = $today->toDateString();
+                break;
+            case "semana":
+                $firstDate = $today->subDays(7)->toDateString();
+                break;
+            case "mes":
+                $firstDate = $today->subDays(30)->toDateString();
+                break;
+            case "semestre":
+                $firstDate = $today->subDays(182)->toDateString();
+                break;
+            case "ano":
+                $firstDate = $today->subDays(365)->toDateString();
+                break;
+            default:
+        }
+
+        if($request->order === "populares"){
+            $query->orderBy('downloaded', 'desc');
+        }else{
+            if($request->order !== "todas"){
+                $query->whereDate('created_at','>=',$firstDate);
+            }
+        }
+
+        if(!empty($request->type)){
             $query->where('type',$request->type);
+        }else{
+            if($request->order !== "populares"){
+                $query->orderBy('created_at', 'desc');
+            }
+        }
 
         $query->with(['category','author'=>function($query){
             $query->select('id','name');
@@ -109,6 +144,9 @@ class SubtitleController extends Controller
             $input = $request->all();
             if(empty($input['type']))
                 $input['type'] = 'FILME';
+
+            if($subtitle->status !== $input['status'])
+                $input['created_at'] = Carbon::now();
 
             $subtitle->update($input);
 
