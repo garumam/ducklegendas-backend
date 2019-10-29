@@ -32,16 +32,16 @@ class SubtitleController extends Controller
                 $firstDate = $today->toDateString();
                 break;
             case "semana":
-                $firstDate = $today->subDays(7)->toDateString();
+                $firstDate = $today->subWeek()->toDateString();
                 break;
             case "mes":
-                $firstDate = $today->subDays(30)->toDateString();
+                $firstDate = $today->subMonth()->toDateString();
                 break;
             case "semestre":
-                $firstDate = $today->subDays(182)->toDateString();
+                $firstDate = $today->subMonths(6)->toDateString();
                 break;
             case "ano":
-                $firstDate = $today->subDays(365)->toDateString();
+                $firstDate = $today->subYear()->toDateString();
                 break;
             default:
         }
