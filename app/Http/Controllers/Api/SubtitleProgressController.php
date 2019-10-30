@@ -15,6 +15,12 @@ class SubtitleProgressController extends Controller
     public $successStatus = 200;
     public $errorStatus = 403;
 
+    public function list(Request $request){
+        $subtitles = SubtitleProgress::where('status','=','EM ANDAMENTO')->take(7)->orderBy('created_at', 'desc')->get();
+
+        return response()->json(['success'=>$subtitles], $this->successStatus);
+    }
+
     public function getAll(Request $request){
         if(Gate::denies('isAdmin')){
             return response()->json(['error'=> ['Acesso negado para este conteúdo!']], $this->errorStatus);
