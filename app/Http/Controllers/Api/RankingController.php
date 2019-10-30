@@ -16,9 +16,33 @@ class RankingController extends Controller
         if(Gate::denies('isAdmin')){
             return response()->json(['error'=> ['Acesso negado para este conteúdo!']], $this->errorStatus);
         }
-        $all = User::withCount('subtitles')->orderBy('subtitles_count','desc')->get();
+        
         $query = User::withCount('subtitles')->where('name','like', '%'.$request->search.'%')->orderBy('subtitles_count','desc');
         $user = $query->paginate(100);
+        $allArray = $this->rankingItensWithPosition();
+
+        $user->data = $user->each(function ($item) use ($allArray) {
+            foreach($allArray as $valueItem){
+                if($item->id === $valueItem['id']){
+                    $item->id = $valueItem['position'];
+                    break;
+                }
+            }
+        });
+        return response()->json(['success'=>$user], $this->successStatus);
+    }
+
+    public function list(){
+        $allArray = $this->rankingItensWithPosition();
+        $allArray = collect($allArray);
+        $allArray = $allArray->filter(function($item){
+            return $item['subtitles_count'] > 0;
+        });
+        return response()->json(['success'=>$allArray], $this->successStatus);
+    }
+
+    public function rankingItensWithPosition(){
+        $all = User::withCount('subtitles')->orderBy('subtitles_count','desc')->get();
         $allArray = $all->toArray();
         $position = 1;
         $count = $allArray[0]['subtitles_count'];
@@ -31,15 +55,7 @@ class RankingController extends Controller
         }
         unset($value);
 
-        $user->data = $user->each(function ($item) use ($allArray) {
-            foreach($allArray as $valueItem){
-                if($item->id === $valueItem['id']){
-                    $item->id = $valueItem['position'];
-                    break;
-                }
-            }
-        });
-        return response()->json(['success'=>$user], $this->successStatus);
+        return $allArray;
     }
 
 }

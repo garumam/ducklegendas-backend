@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class SubtitleProgress extends Model
 {
-    protected $fillable = ['name','percent','status','author'];
+    protected $fillable = ['name','percent','author'];
 
     
 }

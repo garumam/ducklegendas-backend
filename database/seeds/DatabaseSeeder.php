@@ -37,7 +37,6 @@ class DatabaseSeeder extends Seeder
         SubtitleProgress::create([
             'name' => 'Serie em andamento',
             'percent' => 80,
-            'status' => 'EM ANDAMENTO',
             'author' => 1
         ]);
             

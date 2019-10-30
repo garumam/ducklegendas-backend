@@ -16,7 +16,7 @@ class SubtitleProgressController extends Controller
     public $errorStatus = 403;
 
     public function list(Request $request){
-        $subtitles = SubtitleProgress::where('status','=','EM ANDAMENTO')->take(7)->orderBy('created_at', 'desc')->get();
+        $subtitles = SubtitleProgress::orderBy('updated_at', 'desc')->get();
 
         return response()->json(['success'=>$subtitles], $this->successStatus);
     }
@@ -28,8 +28,7 @@ class SubtitleProgressController extends Controller
 
         $query = SubtitleProgress::where('id','like', '%'.$request->search.'%')
                     ->orWhere('name','like', '%'.$request->search.'%')
-                    ->orWhere('percent','like', '%'.$request->search.'%')
-                    ->orWhere('status','like', '%'.$request->search.'%');
+                    ->orWhere('percent','like', '%'.$request->search.'%');
                     
         $subtitles = $query->paginate(100);
 
@@ -61,8 +60,6 @@ class SubtitleProgressController extends Controller
             return response()->json(['error'=>$validator->errors()], $this->errorStatus);            
         }
         $input = $request->all();
-        if(empty($input['status']))
-            $input['status'] = 'EM ANDAMENTO';
 
         $input['author'] = $request->user()->id;
         $subtitle = SubtitleProgress::create($input); 
@@ -112,11 +109,7 @@ class SubtitleProgressController extends Controller
     private function validateSubtitleProgress($request){
         return Validator::make($request->all(), [ 
             'name' => 'required|string', 
-            'percent' => 'required|integer', 
-            'status' => [
-                'nullable',
-                Rule::in(['EM ANDAMENTO', 'CONCLUÍDA']),
-            ], 
+            'percent' => 'required|integer',
             'author' => 'nullable', 
         ]);
     }

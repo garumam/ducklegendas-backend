@@ -17,7 +17,6 @@ class CreateSubtitleProgressesTable extends Migration
             $table->bigIncrements('id');
             $table->string('name');
             $table->string('percent');
-            $table->string('status');
             $table->string('author');
             $table->timestamps();
         });
