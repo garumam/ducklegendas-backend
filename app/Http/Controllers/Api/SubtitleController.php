@@ -71,6 +71,15 @@ class SubtitleController extends Controller
         return response()->json(['success'=>$subtitles], $this->successStatus);
     }
 
+    public function downloaded(Request $request){
+        $subtitle = Subtitle::find($request->id);
+
+        if($subtitle){
+            $subtitle->update(['downloaded'=>$subtitle->downloaded+1]);
+            return response()->json(['success'=>'Atualizado com sucesso!'], $this->successStatus);
+        }
+    }
+
     public function getAll(Request $request){
         if(Gate::denies('isAdmin')){
             return response()->json(['error'=> ['Acesso negado para este conteúdo!']], $this->errorStatus);
