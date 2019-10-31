@@ -62,6 +62,10 @@ class SubtitleController extends Controller
             }
         }
 
+        if(!empty($request->category)){
+            $query->where('category',$request->category);
+        }
+
         $query->with(['category','author'=>function($query){
             $query->select('id','name');
         }]);

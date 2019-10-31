@@ -13,6 +13,11 @@ class CategoryController extends Controller
     public $successStatus = 200;
     public $errorStatus = 403;
 
+    public function list(){
+        $categories = Category::orderBy('name', 'asc')->get();
+        return response()->json(['success'=>$categories], $this->successStatus);
+    }
+
     public function getAll(Request $request){
         if(Gate::denies('isAdmin')){
             return response()->json(['error'=> ['Acesso negado para este conteúdo!']], $this->errorStatus);

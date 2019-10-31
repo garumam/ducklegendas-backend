@@ -45,6 +45,7 @@ Route::group(['namespace' => 'Api'],function () {
     Route::get('subtitles/downloaded', 'SubtitleController@downloaded');
     Route::get('subtitles/andamento/list', 'SubtitleProgressController@list'); 
     Route::get('rankings/list', 'RankingController@list');
+    Route::get('categories/list', 'CategoryController@list');
 
     Route::middleware('auth:api')->group(function () {
         Route::group(['prefix' => 'categories'],function () {
