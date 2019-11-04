@@ -46,6 +46,7 @@ Route::group(['namespace' => 'Api'],function () {
     Route::get('subtitles/andamento/list', 'SubtitleProgressController@list'); 
     Route::get('rankings/list', 'RankingController@list');
     Route::get('categories/list', 'CategoryController@list');
+    Route::get('messages/list', 'MessageController@list');
     Route::post('contact', 'ContactController@send');
 
     Route::middleware('auth:api')->group(function () {
@@ -83,6 +84,13 @@ Route::group(['namespace' => 'Api'],function () {
             Route::post('/store', 'GalleryController@store');
             Route::patch('/{id}', 'GalleryController@update');
             Route::delete('/{id}', 'GalleryController@destroy');
+        });
+        Route::group(['prefix' => 'messages'],function () {
+            Route::get('/{id}', 'MessageController@find');
+            Route::get('/', 'MessageController@getAll');
+            Route::post('/store', 'MessageController@store');
+            Route::patch('/{id}', 'MessageController@update');
+            Route::delete('/{id}', 'MessageController@destroy');
         });
     });
 });
