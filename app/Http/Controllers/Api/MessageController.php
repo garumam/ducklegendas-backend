@@ -103,7 +103,7 @@ class MessageController extends Controller
             'message' => 'required',
             'type' => [
                 'required',
-                Rule::in(['AVISO', 'ALERTA'])
+                Rule::in(['primary','success', 'danger','warning'])
             ],
             'status' => [
                 'required',
