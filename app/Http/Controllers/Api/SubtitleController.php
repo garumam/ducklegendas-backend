@@ -85,12 +85,7 @@ class SubtitleController extends Controller
     }
 
     public function getAll(Request $request){
-        if(!(
-            Gate::allows('isAdmin') 
-            || Gate::allows('isModerador')
-            || Gate::allows('isAutor')
-            || Gate::allows('isLegender')
-        )){
+        if(!Gate::any(['isAdmin','isModerador','isAutor','isLegender'])){
             return response()->json(['error'=> ['Acesso negado para este conteúdo!']], $this->errorStatus);
         }
         
@@ -121,12 +116,7 @@ class SubtitleController extends Controller
     }
 
     public function find(Request $request, $id){
-        if(!(
-            Gate::allows('isAdmin') 
-            || Gate::allows('isModerador')
-            || Gate::allows('isAutor')
-            || Gate::allows('isLegender')
-        )){
+        if(!Gate::any(['isAdmin','isModerador','isAutor','isLegender'])){
             return response()->json(['error'=> ['Acesso negado para este conteúdo!']], $this->errorStatus);
         }
 
@@ -150,12 +140,7 @@ class SubtitleController extends Controller
     }
 
     public function store(Request $request){
-        if(!(
-            Gate::allows('isAdmin') 
-            || Gate::allows('isModerador')
-            || Gate::allows('isAutor')
-            || Gate::allows('isLegender')
-        )){
+        if(!Gate::any(['isAdmin','isModerador','isAutor','isLegender'])){
             return response()->json(['error'=> ['Acesso negado para este conteúdo!']], $this->errorStatus);
         }
         
@@ -181,12 +166,7 @@ class SubtitleController extends Controller
 
     public function update(Request $request) 
     {
-        if(!(
-            Gate::allows('isAdmin') 
-            || Gate::allows('isModerador')
-            || Gate::allows('isAutor')
-            || Gate::allows('isLegender')
-        )){
+        if(!Gate::any(['isAdmin','isModerador','isAutor','isLegender'])){
             return response()->json(['error'=> ['Acesso negado para este conteúdo!']], $this->errorStatus);
         }
 
@@ -208,6 +188,12 @@ class SubtitleController extends Controller
                 }
             }
 
+            if(Gate::allows('isAutor') && $subtitle->author !== $request->user()->id){
+                if($subtitle->status === 'APROVADA'){
+                    return response()->json(['error'=> ['Você não tem permissão de editar legendas aprovadas de outro usuário!']], $this->errorStatus);
+                }
+            }
+
             if(empty($input['type']))
                 $input['type'] = 'FILME';
 
@@ -222,13 +208,8 @@ class SubtitleController extends Controller
         return response()->json(['error'=>['Legenda não encontrada']], $this->errorStatus);   
     }
 
-    public function destroy($id) {
-        if(!(
-            Gate::allows('isAdmin') 
-            || Gate::allows('isModerador')
-            || Gate::allows('isAutor')
-            || Gate::allows('isLegender')
-        )){
+    public function destroy(Request $request, $id) {
+        if(!Gate::any(['isAdmin','isModerador','isAutor','isLegender'])){
             return response()->json(['error'=> ['Acesso negado para este conteúdo!']], $this->errorStatus);
         }
 
@@ -238,6 +219,12 @@ class SubtitleController extends Controller
             if(Gate::allows('isLegender')){
                 if($subtitle->status === 'APROVADA'){
                     return response()->json(['error'=> ['Você não tem permissão de deletar legendas aprovadas!']], $this->errorStatus);
+                }
+            }
+
+            if(Gate::allows('isAutor') && $subtitle->author !== $request->user()->id){
+                if($subtitle->status === 'APROVADA'){
+                    return response()->json(['error'=> ['Você não tem permissão de deletar legendas aprovadas de outro usuário!']], $this->errorStatus);
                 }
             }
 

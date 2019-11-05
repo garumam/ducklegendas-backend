@@ -22,11 +22,7 @@ class SubtitleProgressController extends Controller
     }
 
     public function getAll(Request $request){
-        if(!(
-            Gate::allows('isAdmin') 
-            || Gate::allows('isModerador')
-            || Gate::allows('isAutor')
-        )){
+        if(!Gate::any(['isAdmin','isModerador','isAutor'])){
             return response()->json(['error'=> ['Acesso negado para este conteúdo!']], $this->errorStatus);
         }
 
@@ -41,11 +37,7 @@ class SubtitleProgressController extends Controller
 
     public function find($id){
 
-        if(!(
-            Gate::allows('isAdmin') 
-            || Gate::allows('isModerador')
-            || Gate::allows('isAutor')
-        )){
+        if(!Gate::any(['isAdmin','isModerador','isAutor'])){
             return response()->json(['error'=> ['Acesso negado para este conteúdo!']], $this->errorStatus);
         }
 
@@ -59,11 +51,7 @@ class SubtitleProgressController extends Controller
     }
 
     public function store(Request $request){
-        if(!(
-            Gate::allows('isAdmin') 
-            || Gate::allows('isModerador')
-            || Gate::allows('isAutor')
-        )){
+        if(!Gate::any(['isAdmin','isModerador','isAutor'])){
             return response()->json(['error'=> ['Acesso negado para este conteúdo!']], $this->errorStatus);
         }
         
@@ -84,11 +72,7 @@ class SubtitleProgressController extends Controller
 
     public function update(Request $request) 
     {
-        if(!(
-            Gate::allows('isAdmin') 
-            || Gate::allows('isModerador')
-            || Gate::allows('isAutor')
-        )){
+        if(!Gate::any(['isAdmin','isModerador','isAutor'])){
             return response()->json(['error'=> ['Acesso negado para este conteúdo!']], $this->errorStatus);
         }
 
@@ -110,11 +94,7 @@ class SubtitleProgressController extends Controller
     }
 
     public function destroy($id) {
-        if(!(
-            Gate::allows('isAdmin') 
-            || Gate::allows('isModerador')
-            || Gate::allows('isAutor')
-        )){
+        if(!Gate::any(['isAdmin','isModerador','isAutor'])){
             return response()->json(['error'=> ['Acesso negado para este conteúdo!']], $this->errorStatus);
         }
 
