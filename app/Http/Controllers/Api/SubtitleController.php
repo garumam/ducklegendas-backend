@@ -106,10 +106,16 @@ class SubtitleController extends Controller
             return response()->json(['error'=> ['Acesso negado para este conteúdo!']], $this->errorStatus);
         }
 
-        $subtitle = Subtitle::with('category')->find($id);
+        $subtitle = Subtitle::with(['category','author'])->find($id);
+
+        $subtitleNew = collect($subtitle)->toArray();
+        $subtitleNew['author'] = $subtitleNew['author']['name'];
+       
+
+        
         $categories = Category::all();
         if($subtitle || $categories){
-            return response()->json(['success'=>$subtitle, 'categories' => $categories], $this->successStatus);
+            return response()->json(['success'=>$subtitleNew, 'categories' => $categories], $this->successStatus);
         }else{
             return response()->json(['error'=>['Usuário não encontrado']], $this->errorStatus);
         }
