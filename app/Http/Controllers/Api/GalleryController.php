@@ -16,7 +16,10 @@ class GalleryController extends Controller
     public $errorStatus = 403;
 
     public function getAll(Request $request){
-        if(Gate::denies('isAdmin')){
+        if(!(
+            Gate::allows('isAdmin') 
+            || Gate::allows('isModerador')
+        )){
             return response()->json(['error'=> ['Acesso negado para este conteúdo!']], $this->errorStatus);
         }
 
@@ -29,7 +32,10 @@ class GalleryController extends Controller
 
     public function find($id){
 
-        if(Gate::denies('isAdmin')){
+        if(!(
+            Gate::allows('isAdmin') 
+            || Gate::allows('isModerador')
+        )){
             return response()->json(['error'=> ['Acesso negado para este conteúdo!']], $this->errorStatus);
         }
 
@@ -43,7 +49,10 @@ class GalleryController extends Controller
     }
 
     public function store(Request $request){
-        if(Gate::denies('isAdmin')){
+        if(!(
+            Gate::allows('isAdmin') 
+            || Gate::allows('isModerador')
+        )){
             return response()->json(['error'=> ['Acesso negado para este conteúdo!']], $this->errorStatus);
         }
 
@@ -61,9 +70,13 @@ class GalleryController extends Controller
     }
 
     public function update(Request $request) {
-        if(Gate::denies('isAdmin')){
+        if(!(
+            Gate::allows('isAdmin') 
+            || Gate::allows('isModerador')
+        )){
             return response()->json(['error'=> ['Acesso negado para este conteúdo!']], $this->errorStatus);
         }
+
         if(!$request->hasFile('image')){
             $request->merge(['image' => null]);
         }
@@ -87,7 +100,10 @@ class GalleryController extends Controller
     }
 
     public function destroy($id) {
-        if(Gate::denies('isAdmin')){
+        if(!(
+            Gate::allows('isAdmin') 
+            || Gate::allows('isModerador')
+        )){
             return response()->json(['error'=> ['Acesso negado para este conteúdo!']], $this->errorStatus);
         }
 

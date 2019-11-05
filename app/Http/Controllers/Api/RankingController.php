@@ -13,7 +13,12 @@ class RankingController extends Controller
     public $errorStatus = 403;
 
     public function getAll(Request $request){
-        if(Gate::denies('isAdmin')){
+        if(!(
+            Gate::allows('isAdmin') 
+            || Gate::allows('isModerador')
+            || Gate::allows('isAutor')
+            || Gate::allows('isLegender')
+        )){
             return response()->json(['error'=> ['Acesso negado para este conteúdo!']], $this->errorStatus);
         }
         
