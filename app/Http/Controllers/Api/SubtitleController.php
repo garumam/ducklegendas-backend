@@ -107,12 +107,8 @@ class SubtitleController extends Controller
         }
 
         $subtitle = Subtitle::with(['category','author'])->find($id);
-
-        $subtitleNew = collect($subtitle)->toArray();
+        $subtitleNew = $subtitle->toArray();
         $subtitleNew['author'] = $subtitleNew['author']['name'];
-       
-
-        
         $categories = Category::all();
         if($subtitle || $categories){
             return response()->json(['success'=>$subtitleNew, 'categories' => $categories], $this->successStatus);
