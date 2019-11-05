@@ -57,7 +57,10 @@ class UserController extends Controller
 
     public function store(Request $request) 
     {
-        if(Gate::denies('isAdmin')){
+        if(!(
+            Gate::allows('isAdmin') 
+            || Gate::allows('isModerador')
+        )){
             return response()->json(['error'=> ['Acesso negado para este conteúdo!']], $this->errorStatus);
         } 
 
@@ -83,7 +86,10 @@ class UserController extends Controller
 
     public function update(Request $request) 
     {
-        if(Gate::denies('isAdmin')){
+        if(!(
+            Gate::allows('isAdmin') 
+            || Gate::allows('isModerador')
+        )){
             return response()->json(['error'=> ['Acesso negado para este conteúdo!']], $this->errorStatus);
         }
 
@@ -116,7 +122,10 @@ class UserController extends Controller
 
     public function find($id){
 
-        if(Gate::denies('isAdmin')){
+        if(!(
+            Gate::allows('isAdmin') 
+            || Gate::allows('isModerador')
+        )){
             return response()->json(['error'=> ['Acesso negado para este conteúdo!']], $this->errorStatus);
         }
 
@@ -131,7 +140,10 @@ class UserController extends Controller
 
     public function getAll(Request $request){
 
-        if(Gate::denies('isAdmin')){
+        if(!(
+            Gate::allows('isAdmin') 
+            || Gate::allows('isModerador')
+        )){
             return response()->json(['error'=> ['Acesso negado para este conteúdo!']], $this->errorStatus);
         }
 
@@ -144,7 +156,10 @@ class UserController extends Controller
     }
 
     public function destroy($id) {
-        if(Gate::denies('isAdmin')){
+        if(!(
+            Gate::allows('isAdmin') 
+            || Gate::allows('isModerador')
+        )){
             return response()->json(['error'=> ['Acesso negado para este conteúdo!']], $this->errorStatus);
         }
 
