@@ -114,24 +114,18 @@ class SubtitleController extends Controller
         
         return response()->json(['success'=>$subtitles, 'categories' => Category::all()], $this->successStatus);
     }
-    public function findFront(Request $request, $id){
+    public function findFront($id){
         
         $subtitle = Subtitle::with(['category','author'])->find($id);
 
-        if(Gate::allows('isLegender')){
-            $user = $request->user();
-            if($subtitle->author !== $user->id){
-                return response()->json(['error'=> ['Acesso negado para este conteúdo!']], $this->errorStatus);
-            }
-        }
-
-        $subtitleNew = $subtitle->toArray();
-        $subtitleNew['author'] = $subtitleNew['author']['name'];
-        $categories = Category::all();
-        if($subtitle || $categories){
-            return response()->json(['success'=>$subtitleNew, 'categories' => $categories], $this->successStatus);
+        if($subtitle){
+    
+            $subtitle = $subtitle->toArray();
+            $subtitle['author'] = $subtitle['author']['name'];
+            
+            return response()->json(['success'=>$subtitle], $this->successStatus);
         }else{
-            return response()->json(['error'=>['Usuário não encontrado']], $this->errorStatus);
+            return response()->json(['error'=>['Legenda não encontrada']], $this->errorStatus);
         }
     }
 
@@ -142,18 +136,22 @@ class SubtitleController extends Controller
 
         $subtitle = Subtitle::with(['category','author'])->find($id);
 
-        if(Gate::allows('isLegender')){
-            $user = $request->user();
-            if($subtitle->author !== $user->id){
-                return response()->json(['error'=> ['Acesso negado para este conteúdo!']], $this->errorStatus);
-            }
-        }
-
-        $subtitleNew = $subtitle->toArray();
-        $subtitleNew['author'] = $subtitleNew['author']['name'];
         $categories = Category::all();
-        if($subtitle || $categories){
-            return response()->json(['success'=>$subtitleNew, 'categories' => $categories], $this->successStatus);
+        if($categories){
+
+            if($subtitle){
+                if(Gate::allows('isLegender')){
+                    $user = $request->user();
+                    if($subtitle->author !== $user->id){
+                        return response()->json(['error'=> ['Acesso negado para este conteúdo!']], $this->errorStatus);
+                    }
+                }
+        
+                $subtitle = $subtitle->toArray();
+                $subtitle['author'] = $subtitle['author']['name'];
+            }
+
+            return response()->json(['success'=>$subtitle, 'categories' => $categories], $this->successStatus);
         }else{
             return response()->json(['error'=>['Usuário não encontrado']], $this->errorStatus);
         }
