@@ -48,9 +48,12 @@ class PasswordResetRequest extends Notification implements ShouldQueue
         //$url = url('/api/password/find/'.$this->token);
         $url = $this->urlFront.'/'.$this->token;
         return (new MailMessage)
-            ->line('You are receiving this email because we received a password reset request for your account.')
-            ->action('Reset Password', url($url))
-            ->line('If you did not request a password reset, no further action is required.');
+            ->subject('Alterar Senha - DuckLegendas')
+            ->greeting('Olá!')
+            ->line('Você está recebendo este e-mail pois recebemos uma requisição para troca de senha em sua conta.')
+            ->action('Trocar senha', url($url))
+            ->line('Se você não requisitou a troca de senha em sua conta, nenhuma ação é necessária.')
+            ->salutation("Atenciosamente, ducklegendas.");
     }
 
     /**

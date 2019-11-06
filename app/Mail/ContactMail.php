@@ -28,7 +28,7 @@ class ContactMail extends Mailable
      */
     public function build()
     {
-        return $this->from('suporte.sevs@gmail.com')
+        return $this->subject('E-mail de contato')
                     ->view('contact')
                     ->with([
                         'contact' => $this->contact,

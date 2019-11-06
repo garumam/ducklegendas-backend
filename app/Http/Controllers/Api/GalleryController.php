@@ -96,7 +96,7 @@ class GalleryController extends Controller
         
         if($gallery){
             $path = "/public/".$gallery->image;
-            if(Storage::delete($path) || !Storage::exists($path)){
+            if(Storage::delete($path) || !Storage::exists($path) || $gallery->image === null){
                 $gallery->delete();
                 return response()->json(['success'=>['Imagem excluída com sucesso']], $this->successStatus);
             }

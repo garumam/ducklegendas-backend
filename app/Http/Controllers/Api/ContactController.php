@@ -23,7 +23,7 @@ class ContactController extends Controller
             'email'=> $request->email,
             'mensagem'=> $request->mensagem
         );
-        Mail::to('suporte.sevs@gmail.com')->send(new ContactMail($contact));
+        Mail::to(env('CONTACT_TO'))->send(new ContactMail($contact));
         return response()->json(['success'=>'Mensagem enviada com sucesso!'], $this->successStatus);
     }
 

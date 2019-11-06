@@ -34,7 +34,7 @@ class PasswordResetController extends Controller
         $user = User::where('email', $request->email)->first();
         if (!$user)
             return response()->json([
-                'error' => ["We can't find a user with that e-mail address."]
+                'error' => ["Não encontramos um usuário com este e-mail."]
             ], $this->errorStatus);
         $passwordReset = PasswordReset::updateOrCreate(
             ['email' => $user->email],
@@ -48,7 +48,7 @@ class PasswordResetController extends Controller
                 new PasswordResetRequest($passwordReset->token, $request->urlFront)
             );
         return response()->json([
-            'success' => ['We have e-mailed your password reset link!']
+            'success' => ['Enviamos o link para troca de senha para seu e-mail!']
         ], $this->successStatus);
     }
     
@@ -82,12 +82,12 @@ class PasswordResetController extends Controller
             $user = User::where('email', $passwordReset->email)->first();
             if (!$user)
                 return response()->json([
-                    'error' => ["We can't find a user with that e-mail address."]
+                    'error' => ["Não encontramos um usuário com este e-mail."]
                 ], $this->errorStatus);
             $user->password = bcrypt($request->password);
             $user->save();
             $passwordReset->delete();
-            $user->notify(new PasswordResetSuccess($passwordReset));
+            $user->notify(new PasswordResetSuccess());
             return response()->json(['success' => ['Senha alterada com sucesso!']], $this->successStatus);
 
         }
@@ -99,10 +99,10 @@ class PasswordResetController extends Controller
     public function validationToken($passwordReset)
     {
         if (!$passwordReset)
-            return ['This password reset token is invalid.'];
+            return ['Este token para troca de senha é inválido.'];
         if (Carbon::parse($passwordReset->updated_at)->addMinutes(720)->isPast()) {
             $passwordReset->delete();
-            return ['This password reset token is invalid.'];
+            return ['Este token para troca de senha é inválido.'];
         } 
         return '';
     }

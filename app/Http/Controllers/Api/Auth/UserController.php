@@ -67,6 +67,13 @@ class UserController extends Controller
         }
          
         $input = $request->except('image');
+
+        if(Gate::allows('isModerador')){
+            if(in_array($input['user_type'], ['admin','moderador'])){
+                return response()->json(['error'=> ['Você não pode criar usuários moderadores ou admins!']], $this->errorStatus);
+            }
+        }
+
         $input['password'] = bcrypt($input['password']);
         $user = User::create($input); 
         
@@ -83,7 +90,7 @@ class UserController extends Controller
 
     public function update(Request $request) 
     {
-        if(!Gate::any(['isAdmin','isModerador'])){
+        if(!Gate::any(['isAdmin','isModerador','isAutor','isLegender'])){
             return response()->json(['error'=> ['Acesso negado para este conteúdo!']], $this->errorStatus);
         }
 
@@ -101,6 +108,33 @@ class UserController extends Controller
         $user = User::find($request->id);
 
         if($user){
+
+            if(Gate::allows('isModerador')){
+                $arrayOfTypes = ['admin','moderador'];
+                if($request->user()->id !== $user->id){
+                    if(in_array($user->user_type, $arrayOfTypes)){
+                        return response()->json(['error'=> ['Você não pode editar usuários moderadores ou admins!']], $this->errorStatus);
+                    }
+                    if(in_array($input['user_type'], $arrayOfTypes)){
+                        return response()->json(['error'=> ['Você não pode criar usuários moderadores ou admins!']], $this->errorStatus);
+                    }
+                }else{
+                    if($input['user_type'] !== $request->user()->user_type){
+                        return response()->json(['error'=> ['Você não pode mudar seu tipo de usuário!']], $this->errorStatus);
+                    }
+                }
+            }
+
+            if(Gate::any(['isAutor','isLegender'])){
+                if($request->user()->id !== $user->id){
+                    return response()->json(['error'=> ['Você não pode editar outros usuários!']], $this->errorStatus);
+                }else{
+                    if($input['user_type'] !== $request->user()->user_type){
+                        return response()->json(['error'=> ['Você não pode mudar seu tipo de usuário!']], $this->errorStatus);
+                    }
+                }
+            }
+
             if($request->hasFile('image')){
                 Storage::delete("/public/".$user->image);
                 Utils::update_image($user, $request, 'users');
@@ -114,15 +148,22 @@ class UserController extends Controller
         return response()->json(['error'=>['Usuário não encontrado']], $this->errorStatus);    
     }
 
-    public function find($id){
+    public function find(Request $request, $id){
 
-        if(!Gate::any(['isAdmin','isModerador'])){
+        if(!Gate::any(['isAdmin','isModerador','isAutor','isLegender'])){
             return response()->json(['error'=> ['Acesso negado para este conteúdo!']], $this->errorStatus);
         }
 
         $user = User::find($id);
 
         if($user){
+
+            if(Gate::any(['isAutor','isLegender'])){
+                if($request->user()->id !== $user->id){
+                    return response()->json(['error'=> ['Acesso negado para este conteúdo!']], $this->errorStatus);
+                }
+            }
+
             return response()->json(['success'=>$user], $this->successStatus);
         }else{
             return response()->json(['error'=>['Usuário não encontrado']], $this->errorStatus);
@@ -151,8 +192,16 @@ class UserController extends Controller
         $user = User::find($id);
 
         if($user){
+
+            if(Gate::allows('isModerador')){
+                $arrayOfTypes = ['admin','moderador'];
+                if(in_array($user->user_type, $arrayOfTypes)){
+                    return response()->json(['error'=> ['Você não pode deletar usuários moderadores ou admins!']], $this->errorStatus);
+                }
+            }
+
             $path = "/public/".$user->image;
-            if(Storage::delete($path) || !Storage::exists($path)){
+            if(Storage::delete($path) || !Storage::exists($path) || $user->image === null){
                 $user->delete();
                 return response()->json(['success'=>['Cadastro excluido com sucesso']], $this->successStatus);
             }
