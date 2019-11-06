@@ -19,28 +19,29 @@ use App\Category;
 */
 // SE FOR USAR VERIFICAÇÃO COLOCAR O MIDDLEWARE 'verified' NAS ROTAS QUE QUISER
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
+// Route::middleware('auth:api')->get('/user', function (Request $request) {
+//     return $request->user();
+// });
 
 //ROTA DE TESTE DE RELACIONAMENTOS ENTRE TABELAS
-Route::get('/relacionamento', function (Request $request) {
+// Route::get('/relacionamento', function (Request $request) {
 
-    $categories = Category::with('subtitles')->get();
-    $subtitles = Subtitle::with('category', 'author')->get();
-    $users = User::with('subtitles.category', 'subtitles.author')
-        ->has('subtitles')->get();
+//     $categories = Category::with('subtitles')->get();
+//     $subtitles = Subtitle::with('category', 'author')->get();
+//     $users = User::with('subtitles.category', 'subtitles.author')
+//         ->has('subtitles')->get();
 
-    return response()->json([
-        'categories' =>$categories,
-        'subtitles' =>$subtitles,
-        'users' =>$users
-    ],200); 
-});
+//     return response()->json([
+//         'categories' =>$categories,
+//         'subtitles' =>$subtitles,
+//         'users' =>$users
+//     ],200); 
+// });
 
 // GRUPO DE ROTAS PARA CONTROLADORES DENTRO DA PASTA Api/
 Route::group(['namespace' => 'Api'],function () {
 
+    Route::get('subtitles/front/{id}', 'SubtitleController@findFront');
     Route::get('subtitles/list', 'SubtitleController@list');
     Route::get('subtitles/downloaded', 'SubtitleController@downloaded');
     Route::get('subtitles/andamento/list', 'SubtitleProgressController@list'); 

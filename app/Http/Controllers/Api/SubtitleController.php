@@ -114,6 +114,26 @@ class SubtitleController extends Controller
         
         return response()->json(['success'=>$subtitles, 'categories' => Category::all()], $this->successStatus);
     }
+    public function findFront(Request $request, $id){
+        
+        $subtitle = Subtitle::with(['category','author'])->find($id);
+
+        if(Gate::allows('isLegender')){
+            $user = $request->user();
+            if($subtitle->author !== $user->id){
+                return response()->json(['error'=> ['Acesso negado para este conteúdo!']], $this->errorStatus);
+            }
+        }
+
+        $subtitleNew = $subtitle->toArray();
+        $subtitleNew['author'] = $subtitleNew['author']['name'];
+        $categories = Category::all();
+        if($subtitle || $categories){
+            return response()->json(['success'=>$subtitleNew, 'categories' => $categories], $this->successStatus);
+        }else{
+            return response()->json(['error'=>['Usuário não encontrado']], $this->errorStatus);
+        }
+    }
 
     public function find(Request $request, $id){
         if(!Gate::any(['isAdmin','isModerador','isAutor','isLegender'])){
