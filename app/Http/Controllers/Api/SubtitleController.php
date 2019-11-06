@@ -169,8 +169,16 @@ class SubtitleController extends Controller
             return response()->json(['error'=>$validator->errors()], $this->errorStatus);            
         }
         $input = $request->all();
-        if(Gate::allows('isLegender') || empty($input['status']))
+
+        if(Gate::allows('isLegender')){
+            if($input['status'] !== 'PENDENTE'){
+                return response()->json(['error'=> ['Você só tem permissão para criar legendas pendentes!']], $this->errorStatus);
+            }
+        }
+
+        if(empty($input['status'])){
             $input['status'] = 'PENDENTE';
+        }
         
         if(empty($input['type']))
             $input['type'] = 'FILME';
@@ -204,7 +212,9 @@ class SubtitleController extends Controller
                 if($subtitle->status === 'APROVADA'){
                     return response()->json(['error'=> ['Você não tem permissão de editar legendas aprovadas!']], $this->errorStatus);
                 }else{
-                    $input['status'] = 'PENDENTE';
+                    if($input['status'] !== 'PENDENTE'){
+                        return response()->json(['error'=> ['Você só tem permissão para criar legendas pendentes!']], $this->errorStatus);
+                    }
                 }
             }
 
