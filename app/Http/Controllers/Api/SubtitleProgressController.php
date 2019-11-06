@@ -28,9 +28,16 @@ class SubtitleProgressController extends Controller
 
         $query = SubtitleProgress::where('id','like', '%'.$request->search.'%')
                     ->orWhere('name','like', '%'.$request->search.'%')
-                    ->orWhere('percent','like', '%'.$request->search.'%');
+                    ->orWhere('percent','like', '%'.$request->search.'%')->with('author');
                     
         $subtitles = $query->paginate(100);
+
+        $subtitles = $subtitles->toArray();
+        $arrayData = $subtitles['data'];
+
+        $subtitles['data'] = collect($arrayData)->map(function($item) {
+            return array_merge($item, ['author'=>$item['author']['name']]);
+        });
 
         return response()->json(['success'=>$subtitles], $this->successStatus);
     }
@@ -40,13 +47,17 @@ class SubtitleProgressController extends Controller
         if(!Gate::any(['isAdmin','isModerador','isAutor'])){
             return response()->json(['error'=> ['Acesso negado para este conteúdo!']], $this->errorStatus);
         }
+        
+        $subtitle = SubtitleProgress::with('author')->find($id);
 
-        $subtitle = SubtitleProgress::find($id);
-       
         if($subtitle){
-            return response()->json(['success'=>$subtitle], $this->successStatus);
+
+            $subtitleNew = $subtitle->toArray();
+            $subtitleNew['author'] = $subtitleNew['author']['name'];
+
+            return response()->json(['success'=>$subtitleNew], $this->successStatus);
         }else{
-            return response()->json(['error'=>['Usuário não encontrado']], $this->errorStatus);
+            return response()->json(['error'=>['Legenda em andamento não encontrada']], $this->errorStatus);
         }
     }
 

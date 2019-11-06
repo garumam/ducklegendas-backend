@@ -43,6 +43,10 @@ class User extends Authenticatable
         return $this->hasMany('App\Subtitle', 'author', 'id');
     }
 
+    public function subtitlesprogress(){
+        return $this->hasMany('App\SubtitleProgress', 'author', 'id');
+    }
+
     public function sendApiEmailVerificationNotification()
     {
         $this->notify(new VerifyEmail); // my notification
