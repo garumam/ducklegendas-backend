@@ -136,7 +136,7 @@ class UserController extends Controller
             }
 
             if($request->hasFile('image')){
-                Storage::delete("/public/".$user->image);
+                Storage::delete($user->image);
                 Utils::update_image($user, $request, 'users');
             }
             
@@ -200,7 +200,7 @@ class UserController extends Controller
                 }
             }
 
-            $path = "/public/".$user->image;
+            $path = $user->image;
             if(Storage::delete($path) || !Storage::exists($path) || $user->image === null){
                 $user->delete();
                 return response()->json(['success'=>['Cadastro excluido com sucesso']], $this->successStatus);

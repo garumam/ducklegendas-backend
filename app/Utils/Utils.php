@@ -11,7 +11,7 @@ class Utils {
             $image   = $request->file('image');
             $filename = $model->id . '.' . $image->getClientOriginalExtension();
             $imageUri = 'img/'.$folderName.'/';
-            Storage::putFileAs('public/'.$imageUri, $image, $filename);
+            Storage::putFileAs($imageUri, $image, $filename);
             $imageUri = $imageUri . $filename;
             $model->update(['image'=> $imageUri]);
             $model->touch();

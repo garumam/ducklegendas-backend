@@ -78,7 +78,7 @@ class GalleryController extends Controller
 
         if($gallery){
             if($request->hasFile('image')){
-                Storage::delete("/public/".$gallery->image);
+                Storage::delete($gallery->image);
                 Utils::update_image($gallery, $request, 'subs');
             }
             $gallery->update($request->except('image'));
@@ -95,7 +95,7 @@ class GalleryController extends Controller
         $gallery = Gallery::find($id);
         
         if($gallery){
-            $path = "/public/".$gallery->image;
+            $path = $gallery->image;
             if(Storage::delete($path) || !Storage::exists($path) || $gallery->image === null){
                 $gallery->delete();
                 return response()->json(['success'=>['Imagem excluída com sucesso']], $this->successStatus);
