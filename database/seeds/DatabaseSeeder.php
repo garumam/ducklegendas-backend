@@ -23,16 +23,18 @@ class DatabaseSeeder extends Seeder
         ]);
 
         Subtitle::create([
-            'name' => 'Serie da google',
+            'name' => 'Stranger things',
             'year' => 2019,
             'url' => 'https://www.google.com/',
-            'episode' => 's01e03',
+            'episode' => 's03e03',
             'type' => 'SERIE',
             'image' => '',
             'status' => 'APROVADA',
             'author' => 1,
             'category' => $category->id
         ]);
+
+        factory(App\Subtitle::class, 100)->create();
 
         SubtitleProgress::create([
             'name' => 'Serie em andamento',
