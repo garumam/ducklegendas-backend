@@ -201,7 +201,9 @@ class SubtitleController extends Controller
     public function getCustomUrl($input){
         $long_url = urlencode($input['url']);
         $api_token = 'f425f338ee311727db12017f1dfd0a31346f0475';
-        $alias = trim((str_replace(" ","-",$input['name']).'-'.Carbon::now()->format('d-m-Y-H-i-s')));
+        $nomeLegenda = str_replace(" ","-",$input['name']);
+        $nomeLegenda = substr($nomeLegenda,0,20);
+        $alias = preg_replace('/[^a-z0-9\-]/i', '', $nomeLegenda).'-'.Carbon::now()->format('dmYHis');
         $api_url = "http://shrinkme.io/api?api=$api_token&url=$long_url&alias=$alias";
         $result = @json_decode(file_get_contents($api_url),TRUE);
         return $result;
@@ -246,7 +248,7 @@ class SubtitleController extends Controller
                 $input['created_at'] = Carbon::now();
 
             $result = $this->getCustomUrl($input);
-    
+
             if($result["status"] === 'error') {
                 return response()->json(['error'=> [$result["message"]]], $this->errorStatus);
             } else {
