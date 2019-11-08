@@ -181,6 +181,14 @@ class SubtitleController extends Controller
         if(empty($input['type']))
             $input['type'] = 'FILME';
 
+        $result = $this->getCustomUrl($input);
+
+        if($result["status"] === 'error') {
+            return response()->json(['error'=> [$result["message"]]], $this->errorStatus);
+        } else {
+            $input['url'] = $result["shortenedUrl"];
+        }
+
         $input['author'] = $request->user()->id;
         $subtitle = Subtitle::create($input); 
 
@@ -188,6 +196,15 @@ class SubtitleController extends Controller
             return response()->json(['success'=>['Cadastro efetuado com sucesso']], $this->successStatus); 
         }
         return response()->json(['error'=> ['Ocorreu um problema inesperado por favor tente novamente!']], $this->errorStatus);
+    }
+
+    public function getCustomUrl($input){
+        $long_url = urlencode($input['url']);
+        $api_token = 'f425f338ee311727db12017f1dfd0a31346f0475';
+        $alias = trim((str_replace(" ","-",$input['name']).'-'.Carbon::now()->format('d-m-Y-H-i-s')));
+        $api_url = "http://shrinkme.io/api?api=$api_token&url=$long_url&alias=$alias";
+        $result = @json_decode(file_get_contents($api_url),TRUE);
+        return $result;
     }
 
     public function update(Request $request) 
@@ -227,6 +244,14 @@ class SubtitleController extends Controller
 
             if($subtitle->status !== $input['status'])
                 $input['created_at'] = Carbon::now();
+
+            $result = $this->getCustomUrl($input);
+    
+            if($result["status"] === 'error') {
+                return response()->json(['error'=> [$result["message"]]], $this->errorStatus);
+            } else {
+                $input['url'] = $result["shortenedUrl"];
+            }
 
             $subtitle->update($input);
 
