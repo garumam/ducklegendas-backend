@@ -98,13 +98,18 @@ class UserController extends Controller
             $request->merge(['image' => null]);
         }
 
-        $validator = $this->validateUser($request);
+        $validator = $this->validateUser($request,true);
         if ($validator->fails()) { 
             return response()->json(['error'=>$validator->errors()], $this->errorStatus);            
         }
+        $input = null;
+        if(!empty($request->password)){
+            $input = $request->except('image');
+            $input['password'] = bcrypt($input['password']);
+        }else{
+            $input = $request->except('image','password');
+        } 
         
-        $input = $request->except('image'); 
-        $input['password'] = bcrypt($input['password']);
         $user = User::find($request->id);
 
         if($user){
@@ -210,11 +215,11 @@ class UserController extends Controller
         return response()->json(['error'=>['Usuário não encontrado']], $this->errorStatus);   
     }
 
-    private function validateUser($request){
+    private function validateUser($request, $update = false){
         return Validator::make($request->all(), [ 
             'name' => 'required', 
             'email' => 'required|email|unique:users,email,'.($request->id ? $request->id : ''), 
-            'password' => 'required',
+            'password' => $update?'nullable':'required',
             'image' => 'nullable|image|mimes:jpeg,png,jpg|max:1000|dimensions:max_width=650,max_height=650'
         ]);
     }
