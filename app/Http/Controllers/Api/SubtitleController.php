@@ -92,9 +92,13 @@ class SubtitleController extends Controller
         $query = Subtitle::where(function($q) use ($request) {
             $q->where('id','like', '%'.$request->search.'%')
             ->orWhere('name','like', '%'.$request->search.'%')
-            ->orWhere('year','like', '%'.$request->search.'%')
-            ->orWhere('category','like', '%'.$request->search.'%')
-            ->orWhere('status','like', '%'.$request->search.'%');
+            ->orWhereHas('category',function($c) use ($request) {
+                $c->where('name','like', '%'.$request->search.'%');
+            })
+            ->orWhere('status','like', '%'.$request->search.'%')
+            ->orWhereHas('author',function($a) use ($request) {
+                $a->where('name','like', '%'.$request->search.'%');
+            });
         });
         
         if(Gate::allows('isLegender')){
@@ -105,12 +109,12 @@ class SubtitleController extends Controller
         
         $subtitles = $query->paginate(100);
 
-        $subtitles = $subtitles->toArray();
-        $arrayData = $subtitles['data'];
+        // $subtitles = $subtitles->toArray();
+        // $arrayData = $subtitles['data'];
 
-        $subtitles['data'] = collect($arrayData)->map(function($item) {
-            return array_merge($item, ['author'=>$item['author']['name']]);
-        });
+        // $subtitles['data'] = collect($arrayData)->map(function($item) {
+        //     return array_merge($item, ['author'=>$item['author']['name']]);
+        // });
         
         return response()->json(['success'=>$subtitles, 'categories' => Category::all()], $this->successStatus);
     }
@@ -147,8 +151,8 @@ class SubtitleController extends Controller
                     }
                 }
         
-                $subtitle = $subtitle->toArray();
-                $subtitle['author'] = $subtitle['author']['name'];
+                // $subtitle = $subtitle->toArray();
+                // $subtitle['author'] = $subtitle['author']['name'];
             }
 
             return response()->json(['success'=>$subtitle, 'categories' => $categories], $this->successStatus);
@@ -223,7 +227,7 @@ class SubtitleController extends Controller
         $subtitle = Subtitle::find($request->id);
 
         if($subtitle){
-            $input = $request->except('author');
+            $input = $request->all();
 
             if(Gate::allows('isLegender')){
                 if($subtitle->status === 'APROVADA'){
@@ -299,7 +303,16 @@ class SubtitleController extends Controller
         }
 
         $query = Subtitle::where('status','=', "PENDENTE")
-        ->Where('name','like', '%'.$request->search.'%');
+        ->where(function ($q) use ($request) {
+            $q->where('name','like', '%'.$request->search.'%')
+            ->orWhereHas('category',function($c) use ($request) {
+                $c->where('name','like', '%'.$request->search.'%');
+            })
+            ->orWhereHas('author',function($a) use ($request) {
+                $a->where('name','like', '%'.$request->search.'%');
+            });
+        })
+        ->with('author','category');
         $subtitles = $query->paginate(100);
 
         return response()->json(['success'=>$subtitles], $this->successStatus);

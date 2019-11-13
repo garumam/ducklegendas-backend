@@ -28,16 +28,20 @@ class SubtitleProgressController extends Controller
 
         $query = SubtitleProgress::where('id','like', '%'.$request->search.'%')
                     ->orWhere('name','like', '%'.$request->search.'%')
-                    ->orWhere('percent','like', '%'.$request->search.'%')->with('author');
+                    ->orWhere('percent','like', '%'.$request->search.'%')
+                    ->orWhereHas('author',function ($a) use ($request) {
+                        $a->where('name','like', '%'.$request->search.'%');
+                    })
+                    ->with('author');
                     
         $subtitles = $query->paginate(100);
 
-        $subtitles = $subtitles->toArray();
-        $arrayData = $subtitles['data'];
+        // $subtitles = $subtitles->toArray();
+        // $arrayData = $subtitles['data'];
 
-        $subtitles['data'] = collect($arrayData)->map(function($item) {
-            return array_merge($item, ['author'=>$item['author']['name']]);
-        });
+        // $subtitles['data'] = collect($arrayData)->map(function($item) {
+        //     return array_merge($item, ['author'=>$item['author']['name']]);
+        // });
 
         return response()->json(['success'=>$subtitles], $this->successStatus);
     }
@@ -52,10 +56,10 @@ class SubtitleProgressController extends Controller
 
         if($subtitle){
 
-            $subtitleNew = $subtitle->toArray();
-            $subtitleNew['author'] = $subtitleNew['author']['name'];
+            // $subtitleNew = $subtitle->toArray();
+            // $subtitleNew['author'] = $subtitleNew['author']['name'];
 
-            return response()->json(['success'=>$subtitleNew], $this->successStatus);
+            return response()->json(['success'=>$subtitle], $this->successStatus);
         }else{
             return response()->json(['error'=>['Legenda em andamento não encontrada']], $this->errorStatus);
         }
@@ -120,8 +124,7 @@ class SubtitleProgressController extends Controller
     private function validateSubtitleProgress($request){
         return Validator::make($request->all(), [ 
             'name' => 'required|string', 
-            'percent' => 'required|integer',
-            'author' => 'nullable', 
+            'percent' => 'required|integer'
         ]);
     }
 }
