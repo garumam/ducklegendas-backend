@@ -17,6 +17,7 @@ class Subtitle extends Model
         'category', 
         'type',
         'episode',
+        'note',
         'created_at'
     ];
 

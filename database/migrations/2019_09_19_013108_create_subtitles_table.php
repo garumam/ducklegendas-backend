@@ -22,6 +22,7 @@ class CreateSubtitlesTable extends Migration
             $table->string('episode')->nullable();
             $table->string('image')->nullable();
             $table->string('status');
+            $table->text('note')->nullable();
             $table->bigInteger('author')->unsigned();
             $table->bigInteger('downloaded')->default(0);
             $table->foreign('author')->references('id')->on('users');

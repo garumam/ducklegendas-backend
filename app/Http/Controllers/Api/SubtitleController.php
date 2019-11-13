@@ -202,7 +202,7 @@ class SubtitleController extends Controller
         $long_url = urlencode($input['url']);
         $api_token = 'f425f338ee311727db12017f1dfd0a31346f0475';
         $nomeLegenda = str_replace(" ","-",$input['name']);
-        $nomeLegenda = substr($nomeLegenda,0,18);
+        $nomeLegenda = substr($nomeLegenda,0,16);
         $alias = preg_replace('/[^a-z0-9\-]/i', '', $nomeLegenda).'-'.Carbon::now()->format('dmyHis');
         $api_url = "http://shrinkme.io/api?api=$api_token&url=$long_url&alias=$alias";
         $result = @json_decode(file_get_contents($api_url),TRUE);
@@ -314,6 +314,7 @@ class SubtitleController extends Controller
             'type' => 'nullable|string',
             'episode' => 'nullable|string',
             'image' => 'nullable', 
+            'note' => 'nullable|string',
             'status' => [
                 'nullable',
                 Rule::in(['APROVADA', 'PENDENTE']),
