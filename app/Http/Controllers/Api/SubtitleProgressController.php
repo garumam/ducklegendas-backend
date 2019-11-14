@@ -16,9 +16,8 @@ class SubtitleProgressController extends Controller
     public $errorStatus = 403;
 
     public function list(Request $request){
-        $subtitles = SubtitleProgress::orderBy('updated_at', 'desc')->get();
-
-        return response()->json(['success'=>$subtitles], $this->successStatus);
+        $subtitles = SubtitleProgress::with('author')->orderBy('updated_at', 'desc')->get();
+        return response()->json(['success'=> $subtitles], $this->successStatus);
     }
 
     public function getAll(Request $request){
