@@ -120,7 +120,9 @@ class SubtitleController extends Controller
     }
     public function findFront($id){
         
-        $subtitle = Subtitle::with(['category','author'])->find($id);
+        $subtitle = Subtitle::where('status','APROVADA')
+                        ->with(['category','author'])
+                        ->find($id);
 
         if($subtitle){
     

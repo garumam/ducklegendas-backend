@@ -17,7 +17,9 @@ class RankingController extends Controller
             return response()->json(['error'=> ['Acesso negado para este conteúdo!']], $this->errorStatus);
         }
         
-        $query = User::withCount('subtitles')->where('name','like', '%'.$request->search.'%')->orderBy('subtitles_count','desc');
+        $query = User::withCount(['subtitles' => function ($q) {
+            $q->where('status', 'APROVADA');
+        }])->where('name','like', '%'.$request->search.'%')->orderBy('subtitles_count','desc');
         $user = $query->paginate(100);
         $allArray = $this->rankingItensWithPosition();
 
@@ -42,7 +44,9 @@ class RankingController extends Controller
     }
 
     public function rankingItensWithPosition(){
-        $all = User::withCount('subtitles')->orderBy('subtitles_count','desc')->get();
+        $all = User::withCount(['subtitles' => function ($q) {
+            $q->where('status', 'APROVADA');
+        }])->orderBy('subtitles_count','desc')->get();
         $allArray = $all->toArray();
         $position = 1;
         $count = $allArray[0]['subtitles_count'];
