@@ -40,7 +40,7 @@ use App\Category;
 
 // GRUPO DE ROTAS PARA CONTROLADORES DENTRO DA PASTA Api/
 Route::group(['namespace' => 'Api'],function () {
-
+    Route::post('user/register', 'UserRegister@store');
     Route::get('subtitles/front/{id}', 'SubtitleController@findFront');
     Route::get('subtitles/list', 'SubtitleController@list');
     Route::get('subtitles/downloaded', 'SubtitleController@downloaded');
