@@ -46,17 +46,40 @@ class GalleryController extends Controller
         if(!Gate::any(['isAdmin','isModerador'])){
             return response()->json(['error'=> ['Acesso negado para este conteúdo!']], $this->errorStatus);
         }
+        if(empty($request->multiplefiles)){
+            $validator = $this->validateImage($request);
+            if ($validator->fails()) { 
+                return response()->json(['error'=>$validator->errors()], $this->errorStatus);            
+            }
 
-        $validator = $this->validateImage($request);
-        if ($validator->fails()) { 
-            return response()->json(['error'=>$validator->errors()], $this->errorStatus);            
+            $gallery = Gallery::create($request->except('image'));
+            if($gallery){
+                Utils::update_image($gallery, $request, 'subs');
+                return response()->json(['success'=> ['Imagem cadastrada com sucesso!']], $this->successStatus);
+            }
+            
+        }else{
+            if(Gate::allows('isModerador')){
+                return response()->json(['error'=> ['Você não tem permissão para enviar múltiplas imagens!']], $this->errorStatus);
+            }
+            if($request->hasFile('image')) {
+                foreach($request->file('image') as $image){
+                    $imageName = $image->getClientOriginalName();
+                    $pos = strrpos($imageName, ".");
+                    if ($pos !== false) { 
+                        $imageName = substr($imageName,0,$pos);
+                    }
+                    
+                    $gallery = Gallery::create(['name'=>$imageName]);
+                    
+                    if($gallery){
+                        Utils::update_image($gallery, $request, 'subs', $image);
+                    }
+                }
+                return response()->json(['success'=> ['Imagem cadastrada com sucesso!']], $this->successStatus);
+            }
         }
-
-        $gallery = Gallery::create($request->except('image'));
-        if($gallery){
-            Utils::update_image($gallery, $request, 'subs');
-            return response()->json(['success'=> ['Imagem cadastrada com sucesso!']], $this->successStatus);
-        }
+        
         return response()->json(['error'=> ['Erro inesperado, não foi possível salvar a imagem!']], $this->errorStatus);
     }
 
