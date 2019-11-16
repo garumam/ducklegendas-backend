@@ -103,7 +103,10 @@ class SubtitleController extends Controller
         
         if(Gate::allows('isLegender')){
             $user = $request->user();
-            $query->where('author', $user->id);
+            $query->where(function($q) use ($user) {
+                $q->where('author', $user->id)
+                    ->orWhere('id',1);
+            });
         }
         $query->with('category','author');
         
@@ -146,12 +149,14 @@ class SubtitleController extends Controller
         if($categories){
 
             if($subtitle){
-                if(Gate::allows('isLegender')){
-                    $user = $request->user();
-                    if($subtitle->author !== $user->id){
-                        return response()->json(['error'=> ['Acesso negado para este conteúdo!']], $this->errorStatus);
+                if($id != 1){
+                    if(Gate::allows('isLegender')){
+                        $user = $request->user();
+                        if($subtitle->author !== $user->id){
+                            return response()->json(['error'=> ['Acesso negado para este conteúdo!']], $this->errorStatus);
+                        }
                     }
-                }
+                } 
         
                 // $subtitle = $subtitle->toArray();
                 // $subtitle['author'] = $subtitle['author']['name'];
@@ -174,14 +179,14 @@ class SubtitleController extends Controller
         }
         $input = $request->all();
 
+        if(empty($input['status'])){
+            $input['status'] = 'PENDENTE';
+        }
+
         if(Gate::allows('isLegender')){
             if($input['status'] !== 'PENDENTE'){
                 return response()->json(['error'=> ['Você só tem permissão para criar legendas pendentes!']], $this->errorStatus);
             }
-        }
-
-        if(empty($input['status'])){
-            $input['status'] = 'PENDENTE';
         }
         
         if(empty($input['type']))
@@ -219,6 +224,10 @@ class SubtitleController extends Controller
     {
         if(!Gate::any(['isAdmin','isModerador','isAutor','isLegender'])){
             return response()->json(['error'=> ['Acesso negado para este conteúdo!']], $this->errorStatus);
+        }
+
+        if($request->id == 1 && !Gate::any(['isAdmin','isModerador'])){
+            return response()->json(['error'=> ['Este é um exemplo de como postar, ele não pode ser editado!']], $this->errorStatus);
         }
 
         $validator = $this->validateSubtitle($request);
@@ -272,6 +281,10 @@ class SubtitleController extends Controller
     public function destroy(Request $request, $id) {
         if(!Gate::any(['isAdmin','isModerador','isAutor','isLegender'])){
             return response()->json(['error'=> ['Acesso negado para este conteúdo!']], $this->errorStatus);
+        }
+
+        if($id == 1){
+            return response()->json(['error'=> ['Este é um exemplo de como postar, ele não pode ser deletado!']], $this->errorStatus);
         }
 
         $subtitle = Subtitle::find($id);
