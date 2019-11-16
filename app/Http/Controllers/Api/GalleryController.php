@@ -16,7 +16,7 @@ class GalleryController extends Controller
     public $errorStatus = 403;
 
     public function getAll(Request $request){
-        if(!Gate::any(['isAdmin','isModerador'])){
+        if(!Gate::any(['isAdmin','isModerador','isAutor','isLegender'])){
             return response()->json(['error'=> ['Acesso negado para este conteúdo!']], $this->errorStatus);
         }
 

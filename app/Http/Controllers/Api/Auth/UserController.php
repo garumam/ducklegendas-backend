@@ -183,7 +183,8 @@ class UserController extends Controller
 
         $query = User::where('id','like', '%'.$request->search.'%')
                     ->orWhere('name','like', '%'.$request->search.'%')
-                    ->orWhere('email','like', '%'.$request->search.'%');
+                    ->orWhere('email','like', '%'.$request->search.'%')
+                    ->withCount('subtitles');
         $users = $query->paginate(100);
 
         return response()->json(['success'=>$users], $this->successStatus);
@@ -207,6 +208,7 @@ class UserController extends Controller
 
             $path = $user->image;
             if(Storage::delete($path) || !Storage::exists($path) || $user->image === null){
+                $user->subtitles()->delete();
                 $user->delete();
                 return response()->json(['success'=>['Cadastro excluido com sucesso']], $this->successStatus);
             }
