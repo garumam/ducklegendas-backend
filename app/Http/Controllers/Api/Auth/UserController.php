@@ -31,6 +31,10 @@ class UserController extends Controller
         }
         $user = Auth::user();
 
+        if ($user->user_type === 'desativado') {
+            return response()->json(['error' => ['Esta conta foi desativada, se não souber o motivo entre em contato!']], $this->errorStatus);
+        }
+
         //if($user->email_verified_at !== NULL){
 
             $user->tokens()->forcedelete();
@@ -69,8 +73,8 @@ class UserController extends Controller
         $input = $request->except('image');
 
         if(Gate::allows('isModerador')){
-            if(in_array($input['user_type'], ['admin','moderador'])){
-                return response()->json(['error'=> ['Você não pode criar usuários moderadores ou admins!']], $this->errorStatus);
+            if(in_array($input['user_type'], ['admin','moderador','desativado'])){
+                return response()->json(['error'=> ['Você não pode criar usuários moderadores, admins ou desativados!']], $this->errorStatus);
             }
         }
 
@@ -115,13 +119,13 @@ class UserController extends Controller
         if($user){
 
             if(Gate::allows('isModerador')){
-                $arrayOfTypes = ['admin','moderador'];
+                $arrayOfTypes = ['admin','moderador', 'desativado'];
                 if($request->user()->id !== $user->id){
                     if(in_array($user->user_type, $arrayOfTypes)){
-                        return response()->json(['error'=> ['Você não pode editar usuários moderadores ou admins!']], $this->errorStatus);
+                        return response()->json(['error'=> ['Você não pode editar usuários moderadores, admins ou desativados!']], $this->errorStatus);
                     }
                     if(in_array($input['user_type'], $arrayOfTypes)){
-                        return response()->json(['error'=> ['Você não pode criar usuários moderadores ou admins!']], $this->errorStatus);
+                        return response()->json(['error'=> ['Você não pode criar usuários moderadores, admins ou desativados!']], $this->errorStatus);
                     }
                 }else{
                     if($input['user_type'] !== $request->user()->user_type){
@@ -144,6 +148,10 @@ class UserController extends Controller
                 Storage::delete($user->image);
                 Utils::update_image($user, $request, 'users');
             }
+
+            if($input['user_type'] === 'desativado'){
+                $user->tokens()->forcedelete();
+            }
             
             $user->update($input);
 
@@ -163,6 +171,12 @@ class UserController extends Controller
 
         if($user){
 
+            if(Gate::allows('isModerador')){
+                if($user->user_type === "desativado"){
+                    return response()->json(['error'=> ['Acesso negado para este conteúdo!']], $this->errorStatus);
+                }
+            }
+
             if(Gate::any(['isAutor','isLegender'])){
                 if($request->user()->id !== $user->id){
                     return response()->json(['error'=> ['Acesso negado para este conteúdo!']], $this->errorStatus);
@@ -181,10 +195,18 @@ class UserController extends Controller
             return response()->json(['error'=> ['Acesso negado para este conteúdo!']], $this->errorStatus);
         }
 
-        $query = User::where('id','like', '%'.$request->search.'%')
-                    ->orWhere('name','like', '%'.$request->search.'%')
-                    ->orWhere('email','like', '%'.$request->search.'%')
-                    ->withCount('subtitles');
+        $query = User::where(function($q) use ($request) {
+            $q->where('id','like', '%'.$request->search.'%')
+                ->orWhere('name','like', '%'.$request->search.'%')
+                ->orWhere('email','like', '%'.$request->search.'%');
+        });
+
+        if(Gate::allows('isModerador')){
+            $query->where('user_type','<>','desativado');
+        }
+
+        $query->withCount('subtitles');
+
         $users = $query->paginate(100);
 
         return response()->json(['success'=>$users], $this->successStatus);
@@ -200,9 +222,9 @@ class UserController extends Controller
         if($user){
 
             if(Gate::allows('isModerador')){
-                $arrayOfTypes = ['admin','moderador'];
+                $arrayOfTypes = ['admin','moderador','desativado'];
                 if(in_array($user->user_type, $arrayOfTypes)){
-                    return response()->json(['error'=> ['Você não pode deletar usuários moderadores ou admins!']], $this->errorStatus);
+                    return response()->json(['error'=> ['Você não pode deletar usuários moderadores, admins ou desativados!']], $this->errorStatus);
                 }
             }
 

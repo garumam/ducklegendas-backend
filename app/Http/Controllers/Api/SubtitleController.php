@@ -100,6 +100,12 @@ class SubtitleController extends Controller
                 $a->where('name','like', '%'.$request->search.'%');
             });
         });
+
+        if(Gate::any(['isModerador','isAutor','isLegender'])){
+            $query->whereHas('author',function($q){
+                $q->where('user_type','<>','desativado');
+            });
+        }
         
         if(Gate::allows('isLegender')){
             $user = $request->user();
@@ -143,7 +149,7 @@ class SubtitleController extends Controller
             return response()->json(['error'=> ['Acesso negado para este conteúdo!']], $this->errorStatus);
         }
 
-        $subtitle = Subtitle::with(['category','author'])->find($id);
+        $subtitle = Subtitle::with('category','author')->find($id);
 
         $categories = Category::all();
         if($categories){
@@ -157,6 +163,12 @@ class SubtitleController extends Controller
                         }
                     }
                 } 
+
+                if(Gate::any(['isModerador','isAutor','isLegender'])){
+                    if($subtitle->toArray()['author']['user_type'] === 'desativado'){
+                        return response()->json(['error'=> ['Acesso negado para este conteúdo!']], $this->errorStatus);
+                    }
+                }
         
                 // $subtitle = $subtitle->toArray();
                 // $subtitle['author'] = $subtitle['author']['name'];
@@ -240,6 +252,14 @@ class SubtitleController extends Controller
         if($subtitle){
             $input = $request->all();
 
+
+            if(Gate::any(['isModerador','isAutor','isLegender'])){
+                if($subtitle->author()->first()->toArray()['user_type'] === 'desativado'){
+                    return response()->json(['error'=> ['Você não pode editar legendas de usuários desativados!']], $this->errorStatus);
+                }
+            }
+
+
             if(Gate::allows('isLegender')){
                 if($subtitle->status === 'APROVADA'){
                     return response()->json(['error'=> ['Você não tem permissão de editar legendas aprovadas!']], $this->errorStatus);
@@ -290,6 +310,15 @@ class SubtitleController extends Controller
         $subtitle = Subtitle::find($id);
 
         if($subtitle){
+
+
+            if(Gate::any(['isModerador','isAutor','isLegender'])){
+                if($subtitle->author()->first()->toArray()['user_type'] === 'desativado'){
+                    return response()->json(['error'=> ['Você não pode deletar legendas de usuários desativados!']], $this->errorStatus);
+                }
+            }
+
+
             if(Gate::allows('isLegender')){
                 if($subtitle->status === 'APROVADA'){
                     return response()->json(['error'=> ['Você não tem permissão de deletar legendas aprovadas!']], $this->errorStatus);
@@ -309,11 +338,7 @@ class SubtitleController extends Controller
     }
     
     public function pendingSubtitles(Request $request) {
-        if(!(
-            Gate::allows('isAdmin') 
-            || Gate::allows('isModerador')
-            || Gate::allows('isAutor')
-        )){
+        if(!Gate::any(['isAdmin','isModerador','isAutor'])){
             return response()->json(['error'=> ['Acesso negado para este conteúdo!']], $this->errorStatus);
         }
 
@@ -326,8 +351,16 @@ class SubtitleController extends Controller
             ->orWhereHas('author',function($a) use ($request) {
                 $a->where('name','like', '%'.$request->search.'%');
             });
-        })
-        ->with('author','category');
+        });
+
+        if(Gate::any(['isModerador','isAutor'])){
+            $query->whereHas('author',function($q){
+                $q->where('user_type','<>','desativado');
+            });
+        }
+
+        $query->with('author','category');
+
         $subtitles = $query->paginate(100);
 
         return response()->json(['success'=>$subtitles], $this->successStatus);
