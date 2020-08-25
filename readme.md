@@ -1,6 +1,6 @@
 ## API DUCKLEGENDAS FEITA COM LARAVEL
 
-Frontend <a href="https://github.com/freirejandre/ducklegendas-frontend">click aqui</a>. 
+Frontend <a href="https://github.com/garumam/ducklegendas-frontend">click aqui</a>. 
 
 Veja em funcionamento: https://ducklegendas.com/
 
